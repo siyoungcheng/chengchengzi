@@ -255,6 +255,9 @@
   .content-card-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; color: var(--text-primary); }
   .content-card-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 10px; }
   .content-card-meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .study-card { margin-bottom: 10px; cursor: pointer; }
+  .study-card-head { display: flex; justify-content: space-between; align-items: center; }
+  .study-card-body { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
   .link-edit-row { display: none; flex-direction: column; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
   .link-edit-row.show { display: flex; }
   .link-edit-input { width: 100%; }
@@ -410,30 +413,27 @@
       <!-- 英语学习 -->
       <div class="view" id="view-study">
         <div class="header-card">
-          <div class="header-top"><div><div class="header-title">英语学习</div><div class="header-date">今日英语任务 · 与每日计划联动</div></div></div>
+          <div class="header-top"><div><div class="header-title">英语学习</div><div class="header-date">碎片时间 · 练听力 & 练表达</div></div></div>
           <div class="progress-row">
-            <span id="studyDoneText">0 / 0 完成</span>
+            <span id="studyDoneText">今日 0 次碎片练习</span>
             <div class="progress-bar"><div class="progress-fill" id="studyProgressFill" style="background:#fff;"></div></div>
           </div>
         </div>
-        <div class="energy-card"><div class="energy-emoji">📘</div><div class="energy-text">每多背一个词，世界就多打开一扇窗。</div><button class="energy-change" onclick="nextEnergy()">换一条</button></div>
-        <div class="section-header"><div><span class="section-title">今日英语任务</span><span class="section-subtitle">· 自动同步计划</span></div></div>
-        <div class="task-input-row">
-          <input type="text" class="task-input" id="studyTaskInput" placeholder="添加一条英语学习任务…" />
-          <button class="task-add-btn" onclick="addStudyTask()">+ 添加</button>
-        </div>
-        <ul class="task-list" id="studyTaskList"></ul>
-        <div class="empty-hint" id="studyTaskEmpty" style="display:none;">还没有英语任务，加一条或去每日计划添加～</div>
-        <div class="section-header" style="margin-top:8px;"><div><span class="section-title">学习统计</span><span class="section-subtitle">· 本周</span></div></div>
+        <div class="energy-card"><div class="energy-emoji">📘</div><div class="energy-text">每天 5 分钟，比一周憋大招更管用。</div><button class="energy-change" onclick="nextEnergy()">换一条</button></div>
+
+        <div class="section-header"><div><span class="section-title">碎片练习</span><span class="section-subtitle">· 点开就练，3~10 分钟</span></div></div>
+        <div id="studyPracticeList"></div>
+
+        <div class="section-header" style="margin-top:8px;"><div><span class="section-title">本周累计</span><span class="section-subtitle">· 坚持的力量</span></div></div>
         <div class="content-card">
-          <div class="content-card-title">本周坚持</div>
-          <div class="content-card-desc" id="weekStat">连续打卡 0 天 · 本周完成任务 0/0</div>
+          <div class="content-card-title">本周碎片练习</div>
+          <div class="content-card-desc" id="weekStat">本周完成 0 次 · 覆盖 0 天</div>
           <div class="content-card-meta">
             <span class="tag tag-green">坚持中</span>
-            <button class="btn btn-primary" style="flex:none;padding:4px 12px;font-size:11px;" onclick="toast('打卡成功，继续加油！')">今日打卡</button>
+            <button class="btn btn-primary" style="flex:none;padding:4px 12px;font-size:11px;" data-act="study-checkin">今日打卡</button>
           </div>
         </div>
-        <div class="bottom-tip">— 坚持是最快的捷径 —</div>
+        <div class="bottom-tip">— 碎片攒成河 —</div>
       </div>
 
       <!-- 碎碎念 -->
@@ -491,7 +491,7 @@
   function saveStore() {
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify({
-        tasksByDate, studyExtraByDate, diaryEntries, sportEntries,
+        tasksByDate, studyExtraByDate, studyPracticeByDate, diaryEntries, sportEntries,
         reviewLinks, energyIdx, collapsedDates
       }));
     } catch(e) { console.warn('保存失败', e); }
@@ -521,7 +521,9 @@
 
   // 按日期组织的任务：{ '2026-07-26': [{text,done}], ... }
   let tasksByDate = saved?.tasksByDate || {};
-  let studyExtraByDate = saved?.studyExtraByDate || {}; // 英语页单独加的额外任务
+  let studyExtraByDate = saved?.studyExtraByDate || {}; // 兼容旧数据（已弃用）
+  // 碎片练习记录：{ '2026-07-26': { listen: 2, shadow: 1, speak: 0, vocab: 3, retell: 1 }, ... }
+  let studyPracticeByDate = saved?.studyPracticeByDate || {};
   let diaryEntries = saved?.diaryEntries || [];
   let sportEntries = saved?.sportEntries || [];
   let reviewLinks = saved?.reviewLinks || {}; // {title: url}
@@ -541,7 +543,6 @@
       ];
       saveStore();
     }
-    if (!studyExtraByDate[tk]) studyExtraByDate[tk] = [];
   }
   ensureTodayTasks();
 
@@ -796,66 +797,261 @@
   function resetToday() {
     const tk = todayKey();
     if (tasksByDate[tk]) tasksByDate[tk].forEach(t => t.done = false);
-    if (studyExtraByDate[tk]) studyExtraByDate[tk].forEach(t => t.done = false);
     saveStore(); renderTasks();
     toast('今日已重置，新的一天加油！');
   }
 
-  // ========== 英语学习（与每日计划联动，持久化）==========
-  function getStudyTasks() {
+  // ========== 英语学习 · 碎片时间练习听力和表达 ==========
+  // 5 个微练习，每个 3~10 分钟，点开即练
+  const studyPractices = [
+    {
+      key: 'listen', emoji: '🎧', name: '听力速练', mins: '5 min',
+      tip: '听一句英文，先不看译文，试试能不能听懂大意',
+      color: 'orange',
+      // 每次随机抽一条；idx 随日期变化，点"换一句"也变
+      items: [
+        { en: 'The only way to do great work is to love what you do.', zh: '做出伟大工作的唯一方法，就是热爱你所做的事。' },
+        { en: 'Don\'t let yesterday take up too much of today.', zh: '别让昨天占据太多今天的时间。' },
+        { en: 'It\'s not about perfect. It\'s about effort.', zh: '不追求完美，只追求尽力。' },
+        { en: 'Small daily improvements lead to stunning results.', zh: '每天微小的进步，会带来惊艳的结果。' },
+        { en: 'You don\'t have to be great to start, but you have to start to be great.', zh: '你不必很厉害才能开始，但你必须开始才能变得厉害。' },
+        { en: 'Energy and persistence conquer all things.', zh: '能量与坚持能征服一切。' },
+        { en: 'What we fear of doing most is usually what we most need to do.', zh: '我们最害怕做的事，往往是我们最需要做的事。' },
+        { en: 'The secret of getting ahead is getting started.', zh: '领先的秘诀就是开始行动。' },
+      ]
+    },
+    {
+      key: 'shadow', emoji: '🗣️', name: '影子跟读', mins: '5 min',
+      tip: '播放一句，跟着模仿发音和语调，重复 2~3 遍',
+      color: 'blue',
+      items: [
+        { en: 'I\'ve been thinking about starting a new hobby.', zh: '我一直在考虑开始一个新的爱好。' },
+        { en: 'Could you say that again, please? I didn\'t quite catch it.', zh: '能再说一遍吗？我没太听清。' },
+        { en: 'To be honest, I\'m not really a morning person.', zh: '说实话，我不算是早起的人。' },
+        { en: 'It\'s been a while since we last caught up.', zh: '我们上次聊天已经有一阵子了。' },
+        { en: 'I\'m still on the fence about this idea.', zh: '我对这个想法还在犹豫。' },
+        { en: 'Let\'s grab a coffee sometime this week.', zh: '这周找个时间一起喝杯咖啡吧。' },
+        { en: 'That makes two of us — I feel the same way.', zh: '我们一样——我也有同感。' },
+        { en: 'I\'ll keep my fingers crossed for you.', zh: '我为你祈祷好运。' },
+      ]
+    },
+    {
+      key: 'speak', emoji: '💬', name: '口语话题', mins: '3 min',
+      tip: '看到话题，用英文说 1 分钟（可录音自检）。点"计时"开始',
+      color: 'green',
+      items: [
+        { en: 'Talk about your favorite way to relax after a busy day.', zh: '说说你忙碌一天后最喜欢的放松方式。' },
+        { en: 'Describe a skill you\'d like to learn this year.', zh: '描述一个你今年想学的技能。' },
+        { en: 'What\'s a small habit that changed your life?', zh: '哪个小习惯改变了你的生活？' },
+        { en: 'Recommend a book or video you enjoyed recently.', zh: '推荐一本你最近喜欢的书或视频。' },
+        { en: 'If you had a free weekend, what would you do?', zh: '如果有一个空闲的周末，你会做什么？' },
+        { en: 'Share one thing you\'re grateful for today.', zh: '分享一件你今天感恩的事。' },
+        { en: 'What does your ideal morning look like?', zh: '你理想的早晨是什么样的？' },
+        { en: 'Describe a challenge you overcame recently.', zh: '描述你最近克服的一个挑战。' },
+      ]
+    },
+    {
+      key: 'vocab', emoji: '🔤', name: '单词快闪', mins: '3 min',
+      tip: '看中文想英文，点"显示"对照，会的过、不会的标记',
+      color: 'purple',
+      items: [
+        { en: 'procrastinate', zh: '拖延', ex: 'Stop procrastinating and just start.' },
+        { en: 'consistency', zh: '一致性；坚持', ex: 'Consistency beats intensity.' },
+        { en: 'mindful', zh: '专注的；留心的', ex: 'Be mindful of how you spend your time.' },
+        { en: 'resilience', zh: '韧性；恢复力', ex: 'Resilience is built through small setbacks.' },
+        { en: 'genuine', zh: '真诚的', ex: 'A genuine smile lights up the room.' },
+        { en: 'inevitable', zh: '不可避免的', ex: 'Change is inevitable; growth is optional.' },
+        { en: 'articulate', zh: '清楚表达', ex: 'She can articulate her ideas clearly.' },
+        { en: 'tedious', zh: '单调乏味的', ex: 'Filling forms is a tedious task.' },
+        { en: 'vivid', zh: '生动的', ex: 'I have a vivid memory of that day.' },
+        { en: 'perseverance', zh: '毅力', ex: 'Perseverance is key to mastery.' },
+      ]
+    },
+    {
+      key: 'retell', emoji: '🔄', name: '表达复述', mins: '5 min',
+      tip: '看中文，口头翻译成英文，再点"显示英文"对照',
+      color: 'yellow',
+      items: [
+        { en: 'I usually wake up around seven and start with a glass of water.', zh: '我通常七点左右醒来，先喝一杯水。' },
+        { en: 'It took me a while to get used to working from home.', zh: '我花了一段时间才习惯在家办公。' },
+        { en: 'The key is to break a big goal into small daily actions.', zh: '关键是把大目标拆解成每天的小行动。' },
+        { en: 'I\'m trying to cut down on screen time before bed.', zh: '我在试着减少睡前看屏幕的时间。' },
+        { en: 'Sometimes the smallest step in the right direction ends up being the biggest step of your life.', zh: '有时候朝着正确方向迈出的最小一步，会成为你人生中最大的一步。' },
+        { en: 'I\'d rather make progress slowly than not at all.', zh: '我宁愿慢慢进步，也好过毫无进展。' },
+        { en: 'Let me know if you need any help with that.', zh: '如果你需要帮忙，告诉我。' },
+        { en: 'I\'ve been meaning to ask you about that trip.', zh: '我一直想问你那次旅行的事。' },
+      ]
+    },
+  ];
+  // 每个练习当前展示的素材索引（存在内存，刷新即换）
+  let studyItemIdx = studyPractices.map(() => 0);
+  // 计时器状态
+  let studyTimerId = null;
+
+  function getTodayPractice() {
     const tk = todayKey();
-    const fromPlan = (tasksByDate[tk] || []).filter(t => isEnglishTask(t.text));
-    const fromExtra = studyExtraByDate[tk] || [];
-    const merged = [...fromPlan];
-    fromExtra.forEach(e => { if (!merged.some(m => m.text === e.text)) merged.push(e); });
-    return merged;
+    if (!studyPracticeByDate[tk]) studyPracticeByDate[tk] = {};
+    return studyPracticeByDate[tk];
   }
   function renderStudyTasks() {
-    const ul = document.getElementById('studyTaskList');
-    const empty = document.getElementById('studyTaskEmpty');
-    const tk = todayKey();
-    const studyTasks = getStudyTasks();
-    ul.innerHTML = studyTasks.map((t, i) => {
-      const fromPlan = isEnglishTask(t.text) && (tasksByDate[tk]||[]).some(pt => pt.text === t.text);
+    const list = document.getElementById('studyPracticeList');
+    const today = getTodayPractice();
+    const totalToday = studyPractices.reduce((s, p) => s + (today[p.key] || 0), 0);
+    document.getElementById('studyDoneText').textContent = `今日 ${totalToday} 次碎片练习`;
+    document.getElementById('studyProgressFill').style.width = totalToday ? '100%' : '0%';
+
+    list.innerHTML = studyPractices.map((p, pi) => {
+      const cnt = today[p.key] || 0;
+      const item = p.items[studyItemIdx[pi] % p.items.length];
+      const tagClass = `tag-${p.color}`;
+      const accentColor = {orange:'#d97a1c',blue:'#3a5a8a',green:'#4a6b3a',purple:'#7a3a8a',yellow:'#b8881f'}[p.color];
       return `
-      <li class="task-item ${t.done?'done':''}" data-act="toggle-study" data-i="${i}">
-        <div class="task-checkbox">${t.done?'✓':''}</div>
-        <div class="task-text">${escapeHtml(t.text)}${fromPlan?' <span class="tag tag-blue" style="font-size:9px;padding:1px 5px;margin-left:4px;">来自计划</span>':''}</div>
-        ${fromPlan ? '' : `<div class="task-delete" data-act="del-study" data-i="${i}">×</div>`}
-      </li>`;
+      <div class="content-card study-card" data-pi="${pi}" style="border-left:3px solid ${accentColor};">
+        <div class="study-card-head" data-act="study-toggle" data-pi="${pi}">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:20px;">${p.emoji}</span>
+            <div>
+              <div style="font-weight:600;font-size:14px;">${p.name} <span class="tag ${tagClass}" style="font-size:9px;padding:1px 6px;margin-left:2px;">${p.mins}</span></div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">今日 ${cnt} 次 · ${p.tip}</div>
+            </div>
+          </div>
+          <span class="study-arrow" style="color:var(--text-muted);font-size:12px;">展开 ▾</span>
+        </div>
+        <div class="study-card-body" id="study-body-${pi}" style="display:none;">
+          ${p.key === 'vocab' ? renderVocabBody(item, pi) : ''}
+          ${p.key === 'speak' ? renderSpeakBody(item, pi) : ''}
+          ${(p.key === 'listen' || p.key === 'shadow' || p.key === 'retell') ? renderListenBody(p, item, pi) : ''}
+          <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
+            <button class="btn btn-primary" style="flex:none;padding:5px 14px;font-size:12px;" data-act="study-done" data-pi="${pi}">✓ 完成本次</button>
+            <button class="btn" style="flex:none;padding:5px 12px;font-size:12px;background:var(--bg-page);" data-act="study-next" data-pi="${pi}">换一条 ↻</button>
+          </div>
+        </div>
+      </div>`;
     }).join('');
-    empty.style.display = studyTasks.length ? 'none' : 'block';
-    const doneN = studyTasks.filter(t=>t.done).length;
-    document.getElementById('studyDoneText').textContent = `${doneN} / ${studyTasks.length} 完成`;
-    document.getElementById('studyProgressFill').style.width = studyTasks.length ? (doneN/studyTasks.length*100)+'%' : '0%';
+
     // 周统计
     const weekKeys = [];
     for (let i = 0; i < 7; i++) {
       const d = new Date(); d.setDate(d.getDate() - i);
       weekKeys.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`);
     }
-    let weekDone = 0, weekTotal = 0, streak = 0;
+    let weekTotal = 0, weekDays = 0;
     weekKeys.forEach(k => {
-      const ts = tasksByDate[k] || [];
-      weekTotal += ts.length;
-      weekDone += ts.filter(t=>t.done).length;
-      if (ts.length && ts.every(t=>t.done)) streak++;
+      const day = studyPracticeByDate[k] || {};
+      const n = Object.values(day).reduce((s,v)=>s+v, 0);
+      weekTotal += n;
+      if (n > 0) weekDays++;
     });
-    document.getElementById('weekStat').textContent = `连续完成 ${streak} 天 · 本周完成任务 ${weekDone}/${weekTotal}`;
+    document.getElementById('weekStat').textContent = `本周完成 ${weekTotal} 次 · 覆盖 ${weekDays} 天`;
   }
-  function addStudyTask() {
-    const input = document.getElementById('studyTaskInput');
-    const text = input.value.trim();
-    if (!text) { toast('先写点啥吧'); return; }
-    const tk = todayKey();
-    if (!tasksByDate[tk]) tasksByDate[tk] = [];
-    if (!studyExtraByDate[tk]) studyExtraByDate[tk] = [];
-    tasksByDate[tk].push({ text, done: false });
-    studyExtraByDate[tk].push({ text, done: false });
-    input.value = ''; saveStore(); renderTasks();
-    toast('已添加，并同步到每日计划');
+  function renderListenBody(p, item, pi) {
+    const showZh = p.key === 'retell'; // 复述默认先显示中文
+    const enLabel = p.key === 'retell' ? '参考英文' : '英文';
+    return `
+      <div class="study-sentence" id="study-en-${pi}" style="font-size:15px;line-height:1.5;color:var(--text-primary);margin:6px 0;font-weight:500;">${showZh ? '点击下方"显示英文"' : escapeHtml(item.en)}</div>
+      <div id="study-zh-${pi}" style="font-size:13px;color:var(--text-secondary);margin:4px 0;display:${showZh?'block':'none'};">${escapeHtml(item.zh)}</div>
+      <div id="study-zh-hidden-${pi}" style="font-size:13px;color:var(--text-secondary);margin:4px 0;display:${showZh?'none':'block'};">点击"显示中文"查看译文</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+        <button class="btn" style="padding:5px 12px;font-size:12px;background:#fff3d6;color:#b8881f;border:1px solid #f0d68a;" data-act="study-play" data-pi="${pi}">🔊 朗读</button>
+        <button class="btn" style="padding:5px 12px;font-size:12px;background:var(--bg-page);" data-act="study-reveal" data-pi="${pi}">${showZh?'显示英文':'显示中文'}</button>
+      </div>`;
   }
-  document.getElementById('studyTaskInput').addEventListener('keydown', e => { if (e.key === 'Enter') addStudyTask(); });
+  function renderSpeakBody(item, pi) {
+    return `
+      <div style="font-size:15px;line-height:1.5;color:var(--text-primary);margin:6px 0;font-weight:500;">💬 ${escapeHtml(item.zh)}</div>
+      <div style="font-size:12px;color:var(--text-muted);margin:4px 0;">提示词（可参考）：${escapeHtml(item.en)}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center;">
+        <button class="btn" style="padding:5px 12px;font-size:12px;background:#e6f0db;color:#4a6b3a;border:1px solid #c5d9a8;" data-act="study-timer" data-pi="${pi}">⏱ 计时 1 分钟</button>
+        <span id="study-timer-display-${pi}" style="font-size:13px;color:var(--text-muted);">未开始</span>
+      </div>`;
+  }
+  function renderVocabBody(item, pi) {
+    return `
+      <div style="font-size:20px;font-weight:700;color:var(--text-primary);margin:6px 0;">${escapeHtml(item.zh)}</div>
+      <div id="study-word-en-${pi}" style="font-size:14px;color:var(--text-secondary);margin:4px 0;">点击"显示英文"查看</div>
+      <div id="study-word-ex-${pi}" style="font-size:12px;color:var(--text-muted);margin:4px 0;display:none;font-style:italic;">${escapeHtml(item.ex)}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+        <button class="btn" style="padding:5px 12px;font-size:12px;background:#efe3f3;color:#7a3a8a;border:1px solid #dcc8e3;" data-act="study-reveal-word" data-pi="${pi}">显示英文</button>
+        <button class="btn" style="padding:5px 12px;font-size:12px;background:#fff3d6;color:#b8881f;border:1px solid #f0d68a;" data-act="study-play-word" data-pi="${pi}">🔊 发音</button>
+      </div>`;
+  }
+  function speakEN(text) {
+    if (!('speechSynthesis' in window)) { toast('浏览器不支持语音朗读'); return; }
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; u.rate = 0.9; u.pitch = 1;
+    speechSynthesis.speak(u);
+  }
+  function studyToggle(pi) {
+    const body = document.getElementById('study-body-' + pi);
+    const arrow = document.querySelector(`.study-card[data-pi="${pi}"] .study-arrow`);
+    const open = body.style.display !== 'none';
+    body.style.display = open ? 'none' : 'block';
+    arrow.textContent = open ? '展开 ▾' : '收起 ▴';
+  }
+  function studyDone(pi) {
+    const today = getTodayPractice();
+    today[studyPractices[pi].key] = (today[studyPractices[pi].key] || 0) + 1;
+    saveStore(); renderStudyTasks();
+    toast(`完成 1 次 ${studyPractices[pi].name}！`);
+  }
+  function studyNext(pi) {
+    studyItemIdx[pi] = (studyItemIdx[pi] + 1) % studyPractices[pi].items.length;
+    renderStudyTasks();
+    // 保持展开
+    const body = document.getElementById('study-body-' + pi);
+    if (body) { body.style.display = 'block'; document.querySelector(`.study-card[data-pi="${pi}"] .study-arrow`).textContent = '收起 ▴'; }
+  }
+  function studyPlay(pi) {
+    const p = studyPractices[pi];
+    const item = p.items[studyItemIdx[pi] % p.items.length];
+    speakEN(item.en);
+  }
+  function studyReveal(pi) {
+    const p = studyPractices[pi];
+    const item = p.items[studyItemIdx[pi] % p.items.length];
+    if (p.key === 'retell') {
+      // 复述：显示英文
+      const enEl = document.getElementById('study-en-' + pi);
+      if (enEl.textContent.includes('点击下方')) { enEl.textContent = item.en; }
+    } else {
+      // 听力/跟读：显示中文
+      const zh = document.getElementById('study-zh-' + pi);
+      const hidden = document.getElementById('study-zh-hidden-' + pi);
+      zh.style.display = 'block'; zh.textContent = item.zh;
+      if (hidden) hidden.style.display = 'none';
+    }
+  }
+  function studyRevealWord(pi) {
+    const p = studyPractices[pi];
+    const item = p.items[studyItemIdx[pi] % p.items.length];
+    document.getElementById('study-word-en-' + pi).textContent = item.en;
+    document.getElementById('study-word-ex-' + pi).style.display = 'block';
+  }
+  function studyPlayWord(pi) {
+    const p = studyPractices[pi];
+    const item = p.items[studyItemIdx[pi] % p.items.length];
+    speakEN(item.en);
+  }
+  function studyTimer(pi) {
+    const display = document.getElementById('study-timer-display-' + pi);
+    if (studyTimerId) { clearInterval(studyTimerId); studyTimerId = null; }
+    let sec = 60;
+    display.textContent = `剩余 ${sec}s`;
+    display.style.color = '#c84545';
+    studyTimerId = setInterval(() => {
+      sec--;
+      display.textContent = `剩余 ${sec}s`;
+      if (sec <= 0) {
+        clearInterval(studyTimerId); studyTimerId = null;
+        display.textContent = '⏰ 时间到！可以点"完成本次"';
+        display.style.color = '#4a6b3a';
+        // 震动反馈（手机）
+        if (navigator.vibrate) navigator.vibrate([200,100,200]);
+        toast('⏰ 时间到！');
+      }
+    }, 1000);
+  }
   renderTasks();
 
   // ========== 碎碎念（持久化）==========
@@ -974,46 +1170,23 @@
     else if (act === 'toggle-task') {
       const { key, i } = el.dataset;
       tasksByDate[key][i].done = !tasksByDate[key][i].done;
-      // 同步英语额外任务
-      const text = tasksByDate[key][i].text;
-      if (studyExtraByDate[key]) {
-        const ex = studyExtraByDate[key].find(e => e.text === text);
-        if (ex) ex.done = tasksByDate[key][i].done;
-      }
       saveStore(); renderTasks();
     }
     else if (act === 'del-task') {
       const { key, i } = el.dataset;
-      const text = tasksByDate[key][i].text;
       tasksByDate[key].splice(i, 1);
       if (tasksByDate[key].length === 0) delete tasksByDate[key];
-      if (studyExtraByDate[key]) {
-        const exIdx = studyExtraByDate[key].findIndex(e => e.text === text);
-        if (exIdx >= 0) studyExtraByDate[key].splice(exIdx, 1);
-      }
       saveStore(); renderTasks(); toast('已删除');
     }
-    else if (act === 'toggle-study') {
-      const i = +el.dataset.i;
-      const tk = todayKey();
-      const studyTasks = getStudyTasks();
-      const t = studyTasks[i];
-      t.done = !t.done;
-      const planTask = (tasksByDate[tk]||[]).find(pt => pt.text === t.text);
-      if (planTask) planTask.done = t.done;
-      saveStore(); renderTasks();
-    }
-    else if (act === 'del-study') {
-      const i = +el.dataset.i;
-      const tk = todayKey();
-      const studyTasks = getStudyTasks();
-      const t = studyTasks[i];
-      const exIdx = (studyExtraByDate[tk]||[]).findIndex(e => e.text === t.text);
-      if (exIdx >= 0) studyExtraByDate[tk].splice(exIdx, 1);
-      const planIdx = (tasksByDate[tk]||[]).findIndex(pt => pt.text === t.text);
-      if (planIdx >= 0) tasksByDate[tk].splice(planIdx, 1);
-      saveStore(); renderTasks(); toast('已删除');
-    }
+    else if (act === 'study-toggle') { studyToggle(+el.dataset.pi); }
+    else if (act === 'study-done') { studyDone(+el.dataset.pi); }
+    else if (act === 'study-next') { studyNext(+el.dataset.pi); }
+    else if (act === 'study-play') { studyPlay(+el.dataset.pi); }
+    else if (act === 'study-reveal') { studyReveal(+el.dataset.pi); }
+    else if (act === 'study-reveal-word') { studyRevealWord(+el.dataset.pi); }
+    else if (act === 'study-play-word') { studyPlayWord(+el.dataset.pi); }
+    else if (act === 'study-timer') { studyTimer(+el.dataset.pi); }
+    else if (act === 'study-checkin') { toast('打卡成功，碎片练习继续加油！'); }
     else if (act === 'del-diary') {
       diaryEntries.splice(+el.dataset.i, 1); saveStore(); renderDiary(); toast('已删除');
     }

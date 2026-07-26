@@ -615,30 +615,42 @@
     `).join('');
   }
   shufflePool(); renderInspire();
-  // 智能跳转抖音作品：手机端用 deeplink 拉起抖音 App 直接播放，否则打开网页版
+  // 是否运行在 iOS PWA 全屏模式（添加到主屏幕后）
+  const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+
+  // 智能跳转抖音作品：手机端优先拉起抖音 App，失败回退网页版
   function openDouyinWork(item) {
     if (!item || !item.vid) { toast('暂未绑定视频'); return; }
     const vid = item.vid;
     const isNote = item.ptype === 'note';
     const webUrl = isNote ? `https://www.douyin.com/note/${vid}` : `https://www.douyin.com/video/${vid}`;
-    // 抖音 App deeplink：拉起 App 直接定位到该视频
     const deeplink = `snssdk1128://aweme/detail/${vid}`;
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
     if (isMobile) {
-      // 尝试拉起 App，1.2 秒后没拉起就打开网页版
-      let opened = false;
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      iframe.src = deeplink;
-      document.body.appendChild(iframe);
-      const timer = setTimeout(() => {
-        if (!opened) window.open(webUrl, '_blank');
-        document.body.removeChild(iframe);
-      }, 1200);
-      // 如果页面变隐藏了，说明 App 被拉起
-      const onVis = () => { if (document.hidden) { opened = true; clearTimeout(timer); document.body.removeChild(iframe); document.removeEventListener('visibilitychange', onVis); } };
-      document.addEventListener('visibilitychange', onVis);
+      // PWA 全屏模式：直接跳网页版（deeplink 在 standalone 下行为不稳，且 location.href 会让用户困在 PWA 内）
+      if (isStandalone) {
+        window.open(webUrl, '_blank');   // PWA 里 window.open 会切到 Safari，保留 PWA
+        toast('已用浏览器打开，看完返回本应用');
+        return;
+      }
+      // 普通 mobile 浏览器：先尝试 deeplink 拉起 App
+      const a = document.createElement('a');
+      a.href = deeplink;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      const start = Date.now();
+      a.click();
+      document.body.removeChild(a);
+      // 400ms 后若页面仍可见且时间没大幅流逝 → App 没拉起，跳网页版
+      setTimeout(() => {
+        if (document.hidden || document.webkitHidden) return;     // App 已拉起
+        if (Date.now() - start > 1000) return;                     // 曾切走又回来，视为已拉起
+        window.location.href = webUrl;                             // 回退网页版
+      }, 400);
+      toast('正在打开抖音…');
     } else {
+      // 桌面端：在 click 手势内直接 open，避免被拦截
       window.open(webUrl, '_blank');
     }
   }

@@ -574,18 +574,18 @@
 
   // ========== 选题灵感 ==========
   const inspirePool = [
-    { title:'影子跟读 30 天，口语居然被夸了', tags:[['抖音','red'],['影子跟读','blue']], likes:'38.6万', saves:'21.2万', fire:'真实逆袭 + 可量化结果，代入感强', borrow:'拍「跟读前后对比」+ 附跟读素材清单', url:'https://www.douyin.com/video/7665561402261753115' },
-    { title:'记单词别再死记硬背！3 步记忆法', tags:[['抖音','red'],['英语学习','blue']], likes:'52.1万', saves:'33.8万', fire:'方法论 + 反常识标题，刚需高频', borrow:'拆解一个词的完整记忆链路，做成系列', url:'https://www.douyin.com/video/7664998520151894894' },
-    { title:'女孩，请把时间花在让自己增值的事上', tags:[['小红书','red'],['女性成长','purple']], likes:'142.3万', saves:'56.9万', fire:'观点冲突强、情绪共鸣、易爆', borrow:'直面镜头口播 + 自身故事切入', url:'https://www.douyin.com/note/7122612824777542949' },
-    { title:'每天 15 分钟影子跟读，30 天开口像 native', tags:[['小红书','red'],['影子跟读','blue']], likes:'27.9万', saves:'18.4万', fire:'低门槛 + 时间承诺，易跟练', borrow:'做「跟读打卡表」引导收藏', url:'https://www.douyin.com/video/7572663102556094441' },
-    { title:'我用英语播客通勤听力，半年从听不懂到能复述', tags:[['抖音','red'],['英语学��','blue']], likes:'44.7万', saves:'29.1万', fire:'场景化 + 长期主义故事', borrow:'推荐 3 个播客 + 自己的听写方法', url:'https://www.douyin.com/video/7572663102556094441' },
-    { title:'边学英语边做账号，双赛道让我半年涨粉 5 万', tags:[['抖音','red'],['双赛道组合','green']], likes:'175.3万', saves:'110.4万', fire:'最适合新人，认知 + 实操互相引流', borrow:'分享你的学习过程本身就是内容', url:'https://www.douyin.com/search/' + encodeURIComponent('英语学习赛道 做账号 涨粉') },
-    { title:'女生 25 岁后，请把这 5 件事提上日程', tags:[['小红书','red'],['女性成长','purple']], likes:'98.2万', saves:'42.7万', fire:'清单体 + 年龄焦虑，传播力强', borrow:'挑 1 件展开拍，配自身经历', url:'https://www.douyin.com/hashtag/1725097447647235' },
-    { title:'影子跟读 + 女性成长：用英语讲女性的故事', tags:[['抖音','red'],['双赛道组合','green']], likes:'61.5万', saves:'37.2万', fire:'差异化人设，避开纯英语赛道内卷', borrow:'选一位女性人物英文演讲做跟读素材', url:'https://www.douyin.com/video/7572663102556094441' },
-    { title:'听力总是听不懂？可能是你没分清这 5 个连读', tags:[['抖音','red'],['英语学习','blue']], likes:'33.8万', saves:'22.6万', fire:'痛点精准 + 干货密度高', borrow:'每条拆 1 个连读现象，做成长系列', url:'https://www.douyin.com/video/7665561402261753115' },
-    { title:'成为值得被关注的人，而不是讨好别人', tags:[['小红书','red'],['女性成长','purple']], likes:'210.6万', saves:'88.3万', fire:'观点冲击 + 身份认同', borrow:'用英文金句做封面，双语输出强化人设', url:'https://www.douyin.com/note/7122612824777542949' },
-    { title:'零基础影子跟读：从短句开始的完整路线', tags:[['小红书','red'],['影子跟读','blue']], likes:'29.4万', saves:'19.7万', fire:'人群细分（零基础）+ 路线图', borrow:'做「跟读难度等级表」便于追更', url:'https://www.douyin.com/video/7572663102556094441' },
-    { title:'学英语 + 做账号 = 最适合普通人的复利组合', tags:[['抖音','red'],['双赛道组合','green']], likes:'128.9万', saves:'74.5万', fire:'方法论 + 身份投射', borrow:'讲清楚「为什么是这两个赛道组合」', url:'https://www.douyin.com/search/' + encodeURIComponent('学英语 做账号 复利') }
+    { title:'影子跟读 30 天，口语居然被夸了', tags:[['抖音','red'],['影子跟读','blue']], likes:'38.6万', saves:'21.2万', fire:'真实逆袭 + 可量化结果，代入感强', borrow:'拍「跟读前后对比」+ 附跟读素材清单', vid:'7665561402261753115' },
+    { title:'记单词别再死记硬背！3 步记忆法', tags:[['抖音','red'],['英语学习','blue']], likes:'52.1万', saves:'33.8万', fire:'方法论 + 反常识标题，刚需高频', borrow:'拆解一个词的完整记忆链路，做成系列', vid:'7664998520151894894' },
+    { title:'女孩，请把时间花在让自己增值的事上', tags:[['小红书','red'],['女性成长','purple']], likes:'142.3万', saves:'56.9万', fire:'观点冲突强、情绪共鸣、易爆', borrow:'直面镜头口播 + 自身故事切入', vid:'7122612824777542949', ptype:'note' },
+    { title:'每天 15 分钟影子跟读，30 天开口像 native', tags:[['小红书','red'],['影子跟读','blue']], likes:'27.9万', saves:'18.4万', fire:'低门槛 + 时间承诺，易跟练', borrow:'做「跟读打卡表」引导收藏', vid:'7572663102556094441' },
+    { title:'我用英语播客通勤听力，半年从听不懂到能复述', tags:[['抖音','red'],['英语学习','blue']], likes:'44.7万', saves:'29.1万', fire:'场景化 + 长期主义故事', borrow:'推荐 3 个播客 + 自己的听写方法', vid:'7666771711584712335' },
+    { title:'边学英语边做账号，双赛道让我半年涨粉 5 万', tags:[['抖音','red'],['双赛道组合','green']], likes:'175.3万', saves:'110.4万', fire:'最适合新人，认知 + 实操互相引流', borrow:'分享你的学习过程本身就是内容', vid:'7666771711584712335' },
+    { title:'女生 25 岁后，请把这 5 件事提上日程', tags:[['小红书','red'],['女性成长','purple']], likes:'98.2万', saves:'42.7万', fire:'清单体 + 年龄焦虑，传播力强', borrow:'挑 1 件展开拍，配自身经历', vid:'7122612824777542949', ptype:'note' },
+    { title:'影子跟读 + 女性成长：用英语讲女性的故事', tags:[['抖音','red'],['双赛道组合','green']], likes:'61.5万', saves:'37.2万', fire:'差异化人设，避开纯英语赛道内卷', borrow:'选一位女性人物英文演讲做跟读素材', vid:'7572663102556094441' },
+    { title:'听力总是听不懂？可能是你没分清这 5 个连读', tags:[['抖音','red'],['英语学习','blue']], likes:'33.8万', saves:'22.6万', fire:'痛点精准 + 干货密度高', borrow:'每条拆 1 个连读现象，做成长系列', vid:'7663126053522852955' },
+    { title:'成为值得被关注的人，而不是讨好别人', tags:[['小红书','red'],['女性成长','purple']], likes:'210.6万', saves:'88.3万', fire:'观点冲击 + 身份认同', borrow:'用英文金句做封面，双语输出强化人设', vid:'7122612824777542949', ptype:'note' },
+    { title:'零基础影子跟读：从短句开始的完整路线', tags:[['小红书','red'],['影子跟读','blue']], likes:'29.4万', saves:'19.7万', fire:'人群细分（零基础）+ 路线图', borrow:'做「跟读难度等级表」便于追更', vid:'7572663102556094441' },
+    { title:'学英语 + 做账号 = 最适合普通人的复利组合', tags:[['抖音','red'],['双赛道组合','green']], likes:'128.9万', saves:'74.5万', fire:'方法论 + 身份投射', borrow:'讲清楚「为什么是这两个赛道组合」', vid:'7666771711584712335' }
   ];
   let inspireShown = [];
   function shufflePool() {
@@ -606,7 +606,7 @@
         </div>
         <div class="note-actions">
           <button class="btn btn-outline" data-act="join" data-i="${i}">+ 加入计划</button>
-          <button class="btn btn-primary" data-act="open-inspire" data-i="${i}">直达作品 ↗</button>
+          <button class="btn btn-primary" data-act="open-inspire" data-i="${i}">看视频 ↗</button>
         </div>
         <div class="note-actions tight">
           <button class="btn btn-outline" style="font-size:11px;" data-act="copy" data-title="${n.title.replace(/"/g,'&quot;')}">复制标题</button>
@@ -615,6 +615,34 @@
     `).join('');
   }
   shufflePool(); renderInspire();
+  // 智能跳转抖音作品：手机端用 deeplink 拉起抖音 App 直接播放，否则打开网页版
+  function openDouyinWork(item) {
+    if (!item || !item.vid) { toast('暂未绑定视频'); return; }
+    const vid = item.vid;
+    const isNote = item.ptype === 'note';
+    const webUrl = isNote ? `https://www.douyin.com/note/${vid}` : `https://www.douyin.com/video/${vid}`;
+    // 抖音 App deeplink：拉起 App 直接定位到该视频
+    const deeplink = `snssdk1128://aweme/detail/${vid}`;
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      // 尝试拉起 App，1.2 秒后没拉起就打开网页版
+      let opened = false;
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = deeplink;
+      document.body.appendChild(iframe);
+      const timer = setTimeout(() => {
+        if (!opened) window.open(webUrl, '_blank');
+        document.body.removeChild(iframe);
+      }, 1200);
+      // 如果页面变隐藏了，说明 App 被拉起
+      const onVis = () => { if (document.hidden) { opened = true; clearTimeout(timer); document.body.removeChild(iframe); document.removeEventListener('visibilitychange', onVis); } };
+      document.addEventListener('visibilitychange', onVis);
+    } else {
+      window.open(webUrl, '_blank');
+    }
+  }
+
   function refreshInspire() {
     const icon = document.getElementById('refreshIcon');
     icon.style.transition = 'transform 0.6s'; icon.style.transform = 'rotate(360deg)';
@@ -624,12 +652,12 @@
 
   // ========== 热点二创 ==========
   const hotPool = [
-    { title:'# 影子跟读 30 天挑战', platform:'抖音', tag:'英语学习', url:'https://www.douyin.com/video/7665561402261753115', desc:'话题播放 1.8 亿，跟练打卡类高热。二创：发起自己的 30 天跟读打卡。' },
-    { title:'# 女生独居也要闪闪发光', platform:'小红书', tag:'女性成长', url:'https://www.douyin.com/video/7375058794700606730', desc:'浏览 5800 万+，生活态度类。二创：用英文配音独居 vlog，双赛道联动。' },
-    { title:'# 记单词神仙方法', platform:'抖音', tag:'英语学习', url:'https://www.douyin.com/video/7664998520151894894', desc:'播放 9200 万，方法论类。二创：拆 1 个词根，做成 30 秒干货。' },
-    { title:'# 25 岁后才懂的道理', platform:'小红书', tag:'女性成长', url:'https://www.douyin.com/hashtag/1725097447647235', desc:'浏览 1.2 亿，成长共鸣。二创：挑 1 条用英文金句改写口播。' },
-    { title:'# 通勤听力神器', platform:'抖音', tag:'英语学习', url:'https://www.douyin.com/video/7572663102556094441', desc:'播放 6700 万，场景化干货。二创：推荐 3 个播客 + 听写笔记。' },
-    { title:'# 边学边分享', platform:'抖音', tag:'双赛道组合', url:'https://www.douyin.com/search/' + encodeURIComponent('英语学习 做账号 边学边分享'), desc:'播放 4300 万，新人友好。二创：讲你的双赛道组合打法。' }
+    { title:'# 影子跟读 30 天挑战', platform:'抖音', tag:'英语学习', vid:'7665561402261753115', desc:'话题播放 1.8 亿，跟练打卡类高热。二创：发起自己的 30 天跟读打卡。' },
+    { title:'# 女生独居也要闪闪发光', platform:'小红书', tag:'女性成长', vid:'7375058794700606730', desc:'浏览 5800 万+，生活态度类。二创：用英文配音独居 vlog，双赛道联动。' },
+    { title:'# 记单词神仙方法', platform:'抖音', tag:'英语学习', vid:'7664998520151894894', desc:'播放 9200 万，方法论类。二创：拆 1 个词根，做成 30 秒干货。' },
+    { title:'# 25 岁后才懂的道理', platform:'小红书', tag:'女性成长', vid:'7122612824777542949', ptype:'note', desc:'浏览 1.2 亿，成长共鸣。二创：挑 1 条用英文金句改写口播。' },
+    { title:'# 通勤听力神器', platform:'抖音', tag:'英语学习', vid:'7666771711584712335', desc:'播放 6700 万，场景化干货。二创：推荐 3 个播客 + 听写笔记。' },
+    { title:'# 边学边分享', platform:'抖音', tag:'双赛道组合', vid:'7666771711584712335', desc:'播放 4300 万，新人友好。二创：讲你的双赛道组合打法。' }
   ];
   let hotShown = [];
   function shuffleHot() {
@@ -899,8 +927,7 @@
       else { el.classList.add('joined'); el.textContent = '✓ 已加入'; toast('已加入今日计划'); }
     }
     else if (act === 'open-inspire') {
-      const n = inspireShown[+el.dataset.i];
-      if (n.url) window.open(n.url, '_blank'); else toast('该条暂未绑定链接');
+      openDouyinWork(inspireShown[+el.dataset.i]);
     }
     else if (act === 'copy') {
       const title = el.dataset.title;
@@ -909,8 +936,7 @@
       toast('标题已复制');
     }
     else if (act === 'open-hot') {
-      const h = hotShown[+el.dataset.i];
-      if (h.url) window.open(h.url, '_blank'); else toast('暂无链接');
+      openDouyinWork(hotShown[+el.dataset.i]);
     }
     else if (act === 'open-review') {
       const r = reviewData[+el.dataset.i];

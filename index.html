@@ -516,7 +516,7 @@
 
   // ========== 状态初始化（带持久化恢复）==========
   const saved = loadStore();
-  const englishKeywords = ['英语','听力','口语','单词','词汇','跟读','阅读','写作','翻译','语法','发音','背诵','精听','泛听','外刊','背词'];
+  const englishKeywords = ['英语','听力','口语','单词','词汇','跟读','阅读','写作','翻译','语法','发音','背诵','精听','泛听','外刊','背词','豆包','墨墨','新概念','课文','复述'];
   function isEnglishTask(text) { return englishKeywords.some(k => text.includes(k)); }
 
   // 按日期组织的任务：{ '2026-07-26': [{text,done}], ... }
@@ -533,11 +533,11 @@
     const tk = todayKey();
     if (!tasksByDate[tk]) {
       tasksByDate[tk] = [
-        { text: '英语听力 1 篇', done: false },
-        { text: '英语口语对练 10 分钟', done: false },
-        { text: '记单词 50 个', done: false },
-        { text: '影子跟读 15 分钟', done: false },
-        { text: '复盘一条爆款笔记', done: false }
+        { text: '英语听力 60min', done: false },
+        { text: '影子跟读 60min', done: false },
+        { text: '豆包口语对话 30min', done: false },
+        { text: '墨墨背单词 50 个', done: false },
+        { text: '新概念课文复述/课提练习', done: false }
       ];
       saveStore();
     }

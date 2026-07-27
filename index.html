@@ -255,9 +255,36 @@
   .content-card-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; color: var(--text-primary); }
   .content-card-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 10px; }
   .content-card-meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-  .study-card { margin-bottom: 10px; cursor: pointer; }
-  .study-card-head { display: flex; justify-content: space-between; align-items: center; }
-  .study-card-body { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
+
+  /* 英语学习：每日对话 */
+  .study-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+  .study-stat-card { background: #fff; border-radius: 10px; padding: 8px 4px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
+  .study-stat-num { font-size: 18px; font-weight: 700; color: var(--primary); }
+  .study-stat-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+  .study-date-bar { display: flex; justify-content: space-between; align-items: center; margin: 10px 0 8px; }
+  .study-date-bar .btn { padding: 5px 10px; font-size: 12px; background: #fff; color: var(--text-secondary); }
+  .study-date-label { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .study-tools-bar { display: flex; gap: 8px; margin-bottom: 10px; }
+  .study-tool-btn { padding: 5px 10px; font-size: 12px; background: #fff; color: var(--text-secondary); border: 1px solid var(--border); }
+  .study-tool-btn.active { background: var(--tag-green-bg); color: var(--tag-green-text); border-color: #c5d9a8; }
+  .study-categories { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 6px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .study-categories::-webkit-scrollbar { display: none; }
+  .study-cat-chip { flex: none; padding: 5px 10px; border-radius: 16px; background: #fff; border: 1px solid var(--border); font-size: 12px; color: var(--text-secondary); cursor: pointer; white-space: nowrap; }
+  .study-cat-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .study-dialogue-card { background: #fff; border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; box-shadow: var(--shadow-card); }
+  .study-dialogue-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .study-dialogue-meta { display: flex; align-items: center; gap: 6px; }
+  .study-dialogue-idx { font-size: 11px; color: var(--text-muted); }
+  .study-dialogue-level { color: #f0a04b; font-size: 11px; letter-spacing: -1px; }
+  .study-dialogue-body { line-height: 1.7; font-size: 14px; color: var(--text-primary); }
+  .study-dialogue-line { margin: 4px 0; }
+  .study-dialogue-zh { font-size: 12px; color: var(--text-secondary); margin-top: 8px; padding: 8px; background: #f9f7f2; border-radius: 8px; line-height: 1.6; }
+  .study-dialogue-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .study-dialogue-actions .btn { padding: 5px 10px; font-size: 12px; }
+  .study-dialogue-actions .btn-done { background: #e6f0db; color: #4a6b3a; border: 1px solid #c5d9a8; }
+  .study-dialogue-actions .btn-done.active { background: var(--tag-green-bg); color: var(--tag-green-text); }
+  .study-dialogue-actions .btn-fav { background: #fff8e1; color: #b8881f; border: 1px solid #f0d68a; }
+  .study-dialogue-actions .btn-fav.active { background: #fff3d6; }
   .link-edit-row { display: none; flex-direction: column; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
   .link-edit-row.show { display: flex; }
   .link-edit-input { width: 100%; }
@@ -410,30 +437,34 @@
         <div class="bottom-tip">— 点「编辑链接」绑定你的作品链接 —</div>
       </div>
 
-      <!-- 英语学习 -->
+      <!-- 英语学习：英语口语 · 每日对话 -->
       <div class="view" id="view-study">
         <div class="header-card">
-          <div class="header-top"><div><div class="header-title">英语学习</div><div class="header-date">碎片时间 · 练听力 & 练表达</div></div></div>
-          <div class="progress-row">
-            <span id="studyDoneText">今日 0 次碎片练习</span>
-            <div class="progress-bar"><div class="progress-fill" id="studyProgressFill" style="background:#fff;"></div></div>
+          <div class="header-top"><div><div class="header-title">🗣️ 英语口语 · 每日对话</div><div class="header-date">生活场景 · 每天练几句</div></div></div>
+          <div class="study-stats-row">
+            <div class="study-stat-card"><div class="study-stat-num" id="statToday">0/0</div><div class="study-stat-label">今日已练</div></div>
+            <div class="study-stat-card"><div class="study-stat-num" id="statTotal">0</div><div class="study-stat-label">累计练习</div></div>
+            <div class="study-stat-card"><div class="study-stat-num" id="statFav">0</div><div class="study-stat-label">收藏对话</div></div>
+            <div class="study-stat-card"><div class="study-stat-num" id="statStreak">0</div><div class="study-stat-label">连续天数</div></div>
           </div>
         </div>
-        <div class="energy-card"><div class="energy-emoji">📘</div><div class="energy-text">每天 5 分钟，比一周憋大招更管用。</div><button class="energy-change" onclick="nextEnergy()">换一条</button></div>
 
-        <div class="section-header"><div><span class="section-title">碎片练习</span><span class="section-subtitle">· 点开就练，3~10 分钟</span></div></div>
-        <div id="studyPracticeList"></div>
-
-        <div class="section-header" style="margin-top:8px;"><div><span class="section-title">本周累计</span><span class="section-subtitle">· 坚持的力量</span></div></div>
-        <div class="content-card">
-          <div class="content-card-title">本周碎片练习</div>
-          <div class="content-card-desc" id="weekStat">本周完成 0 次 · 覆盖 0 天</div>
-          <div class="content-card-meta">
-            <span class="tag tag-green">坚持中</span>
-            <button class="btn btn-primary" style="flex:none;padding:4px 12px;font-size:11px;" data-act="study-checkin">今日打卡</button>
-          </div>
+        <div class="study-date-bar">
+          <button class="btn" data-act="study-prev-day">‹ 上一天</button>
+          <span class="study-date-label" id="studyDateLabel">今天</span>
+          <button class="btn" data-act="study-next-day">下一天 ›</button>
         </div>
-        <div class="bottom-tip">— 碎片攒成河 —</div>
+
+        <div class="study-tools-bar">
+          <button class="btn study-tool-btn active" id="studyZhToggle" data-act="study-toggle-zh">中文翻译 开</button>
+          <button class="btn study-tool-btn" data-act="study-mark-all">全部标记已练</button>
+        </div>
+
+        <div class="study-categories" id="studyCategories"></div>
+
+        <div id="studyDialogueList"></div>
+        <div class="empty-hint" id="studyEmpty" style="display:none;">该分类下没有对话～</div>
+        <div class="bottom-tip" style="margin-top:16px;">— 每天几句，开口就不一样 —</div>
       </div>
 
       <!-- 碎碎念 -->
@@ -491,7 +522,9 @@
   function saveStore() {
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify({
-        tasksByDate, studyExtraByDate, studyPracticeByDate, diaryEntries, sportEntries,
+        tasksByDate, studyExtraByDate, studyPracticeByDate,
+        studyFavorites, studyTotalCount, studyShowZh, studyFilter, studyDateOffset,
+        diaryEntries, sportEntries,
         reviewLinks, energyIdx, collapsedDates
       }));
     } catch(e) { console.warn('保存失败', e); }
@@ -522,8 +555,13 @@
   // 按日期组织的任务：{ '2026-07-26': [{text,done}], ... }
   let tasksByDate = saved?.tasksByDate || {};
   let studyExtraByDate = saved?.studyExtraByDate || {}; // 兼容旧数据（已弃用）
-  // 碎片练习记录：{ '2026-07-26': { listen: 2, shadow: 1, speak: 0, vocab: 3, retell: 1 }, ... }
+  // 英语学习：碎片练习记录 / 每日对话记录
   let studyPracticeByDate = saved?.studyPracticeByDate || {};
+  let studyFavorites = saved?.studyFavorites || [];
+  let studyTotalCount = saved?.studyTotalCount || 0;
+  let studyShowZh = saved?.studyShowZh !== false;
+  let studyFilter = saved?.studyFilter || 'all';
+  let studyDateOffset = saved?.studyDateOffset || 0;
   let diaryEntries = saved?.diaryEntries || [];
   let sportEntries = saved?.sportEntries || [];
   let reviewLinks = saved?.reviewLinks || {}; // {title: url}
@@ -801,179 +839,472 @@
     toast('今日已重置，新的一天加油！');
   }
 
-  // ========== 英语学习 · 碎片时间练习听力和表达 ==========
-  // 5 个微练习，每个 3~10 分钟，点开即练
-  const studyPractices = [
-    {
-      key: 'listen', emoji: '🎧', name: '听力速练', mins: '5 min',
-      tip: '听一句英文，先不看译文，试试能不能听懂大意',
-      color: 'orange',
-      // 每次随机抽一条；idx 随日期变化，点"换一句"也变
-      items: [
-        { en: 'The only way to do great work is to love what you do.', zh: '做出伟大工作的唯一方法，就是热爱你所做的事。' },
-        { en: 'Don\'t let yesterday take up too much of today.', zh: '别让昨天占据太多今天的时间。' },
-        { en: 'It\'s not about perfect. It\'s about effort.', zh: '不追求完美，只追求尽力。' },
-        { en: 'Small daily improvements lead to stunning results.', zh: '每天微小的进步，会带来惊艳的结果。' },
-        { en: 'You don\'t have to be great to start, but you have to start to be great.', zh: '你不必很厉害才能开始，但你必须开始才能变得厉害。' },
-        { en: 'Energy and persistence conquer all things.', zh: '能量与坚持能征服一切。' },
-        { en: 'What we fear of doing most is usually what we most need to do.', zh: '我们最害怕做的事，往往是我们最需要做的事。' },
-        { en: 'The secret of getting ahead is getting started.', zh: '领先的秘诀就是开始行动。' },
-      ]
-    },
-    {
-      key: 'shadow', emoji: '🗣️', name: '影子跟读', mins: '5 min',
-      tip: '播放一句，跟着模仿发音和语调，重复 2~3 遍',
-      color: 'blue',
-      items: [
-        { en: 'I\'ve been thinking about starting a new hobby.', zh: '我一直在考虑开始一个新的爱好。' },
-        { en: 'Could you say that again, please? I didn\'t quite catch it.', zh: '能再说一遍吗？我没太听清。' },
-        { en: 'To be honest, I\'m not really a morning person.', zh: '说实话，我不算是早起的人。' },
-        { en: 'It\'s been a while since we last caught up.', zh: '我们上次聊天已经有一阵子了。' },
-        { en: 'I\'m still on the fence about this idea.', zh: '我对这个想法还在犹豫。' },
-        { en: 'Let\'s grab a coffee sometime this week.', zh: '这周找个时间一起喝杯咖啡吧。' },
-        { en: 'That makes two of us — I feel the same way.', zh: '我们一样——我也有同感。' },
-        { en: 'I\'ll keep my fingers crossed for you.', zh: '我为你祈祷好运。' },
-      ]
-    },
-    {
-      key: 'speak', emoji: '💬', name: '口语话题', mins: '3 min',
-      tip: '看到话题，用英文说 1 分钟（可录音自检）。点"计时"开始',
-      color: 'green',
-      items: [
-        { en: 'Talk about your favorite way to relax after a busy day.', zh: '说说你忙碌一天后最喜欢的放松方式。' },
-        { en: 'Describe a skill you\'d like to learn this year.', zh: '描述一个你今年想学的技能。' },
-        { en: 'What\'s a small habit that changed your life?', zh: '哪个小习惯改变了你的生活？' },
-        { en: 'Recommend a book or video you enjoyed recently.', zh: '推荐一本你最近喜欢的书或视频。' },
-        { en: 'If you had a free weekend, what would you do?', zh: '如果有一个空闲的周末，你会做什么？' },
-        { en: 'Share one thing you\'re grateful for today.', zh: '分享一件你今天感恩的事。' },
-        { en: 'What does your ideal morning look like?', zh: '你理想的早晨是什么样的？' },
-        { en: 'Describe a challenge you overcame recently.', zh: '描述你最近克服的一个挑战。' },
-      ]
-    },
-    {
-      key: 'vocab', emoji: '🔤', name: '单词快闪', mins: '3 min',
-      tip: '看中文想英文，点"显示"对照，会的过、不会的标记',
-      color: 'purple',
-      items: [
-        { en: 'procrastinate', zh: '拖延', ex: 'Stop procrastinating and just start.' },
-        { en: 'consistency', zh: '一致性；坚持', ex: 'Consistency beats intensity.' },
-        { en: 'mindful', zh: '专注的；留心的', ex: 'Be mindful of how you spend your time.' },
-        { en: 'resilience', zh: '韧性；恢复力', ex: 'Resilience is built through small setbacks.' },
-        { en: 'genuine', zh: '真诚的', ex: 'A genuine smile lights up the room.' },
-        { en: 'inevitable', zh: '不可避免的', ex: 'Change is inevitable; growth is optional.' },
-        { en: 'articulate', zh: '清楚表达', ex: 'She can articulate her ideas clearly.' },
-        { en: 'tedious', zh: '单调乏味的', ex: 'Filling forms is a tedious task.' },
-        { en: 'vivid', zh: '生动的', ex: 'I have a vivid memory of that day.' },
-        { en: 'perseverance', zh: '毅力', ex: 'Perseverance is key to mastery.' },
-      ]
-    },
-    {
-      key: 'retell', emoji: '🔄', name: '表达复述', mins: '5 min',
-      tip: '看中文，口头翻译成英文，再点"显示英文"对照',
-      color: 'yellow',
-      items: [
-        { en: 'I usually wake up around seven and start with a glass of water.', zh: '我通常七点左右醒来，先喝一杯水。' },
-        { en: 'It took me a while to get used to working from home.', zh: '我花了一段时间才习惯在家办公。' },
-        { en: 'The key is to break a big goal into small daily actions.', zh: '关键是把大目标拆解成每天的小行动。' },
-        { en: 'I\'m trying to cut down on screen time before bed.', zh: '我在试着减少睡前看屏幕的时间。' },
-        { en: 'Sometimes the smallest step in the right direction ends up being the biggest step of your life.', zh: '有时候朝着正确方向迈出的最小一步，会成为你人生中最大的一步。' },
-        { en: 'I\'d rather make progress slowly than not at all.', zh: '我宁愿慢慢进步，也好过毫无进展。' },
-        { en: 'Let me know if you need any help with that.', zh: '如果你需要帮忙，告诉我。' },
-        { en: 'I\'ve been meaning to ask you about that trip.', zh: '我一直想问你那次旅行的事。' },
-      ]
-    },
+  // ========== 英语学习 · 英语口语每日对话 ==========
+  // 分类定义
+  const studyCategoriesDef = [
+    { key: 'all', label: '全部', emoji: '🍊' },
+    { key: '寒暄', label: '寒暄', emoji: '👋' },
+    { key: '职场', label: '职场', emoji: '💼' },
+    { key: '餐饮', label: '餐饮', emoji: '🍽️' },
+    { key: '购物', label: '购物', emoji: '🛒' },
+    { key: '旅行', label: '旅行', emoji: '✈️' },
+    { key: '社交', label: '社交', emoji: '💬' },
+    { key: '电话', label: '电话', emoji: '📞' },
+    { key: '求助', label: '求助', emoji: '🙋' },
+    { key: '情感', label: '情感', emoji: '❤️' },
+    { key: '观点', label: '观点', emoji: '💡' },
+    { key: 'fav', label: '收藏', emoji: '⭐' },
+    { key: 'unpractice', label: '未练', emoji: '✓' },
   ];
-  // 每个练习当前展示的素材索引（存在内存，刷新即换）
-  let studyItemIdx = studyPractices.map(() => 0);
-  // 计时器状态
-  let studyTimerId = null;
+  // 生活场景对话池（按日期抽取每日30条）
+  const dialoguePool = [
+    { category: '寒暄', level: 1, lines: [
+      { en: 'A: Nice to meet you!', zh: 'A: 很高兴认识你！' },
+      { en: 'B: Nice to meet you too! I\'ve heard a lot about you.', zh: 'B: 我也是！久仰大名了。' }
+    ]},
+    { category: '寒暄', level: 1, lines: [
+      { en: 'A: How have you been?', zh: 'A: 最近怎么样？' },
+      { en: 'B: Pretty good, thanks. Just busy with work.', zh: 'B: 还不错，谢谢。就是工作有点忙。' }
+    ]},
+    { category: '寒暄', level: 1, lines: [
+      { en: 'A: Long time no see!', zh: 'A: 好久不见！' },
+      { en: 'B: Yeah, it\'s been ages. You look great!', zh: 'B: 是啊，好久不见了。你看起来气色很好！' }
+    ]},
+    { category: '职场', level: 2, lines: [
+      { en: 'A: Could we reschedule tomorrow\'s meeting to Friday?', zh: 'A: 我们能把明天的会议改到周五吗？' },
+      { en: 'B: Friday works for me. What time?', zh: 'B: 周五我可以。几点？' }
+    ]},
+    { category: '职场', level: 2, lines: [
+      { en: 'A: I\'ll send you the report by the end of the day.', zh: 'A: 我会在今天下班前把报告发给你。' },
+      { en: 'B: Great, please cc me on the email.', zh: 'B: 好的，邮件请抄送我。' }
+    ]},
+    { category: '职场', level: 3, lines: [
+      { en: 'A: We need to cut the budget by 10% next quarter.', zh: 'A: 下个季度我们需要把预算削减10%。' },
+      { en: 'B: That\'s tough. Let\'s prioritize the must-haves first.', zh: 'B: 这有点难。我们先确定优先级最高的项目吧。' }
+    ]},
+    { category: '餐饮', level: 1, lines: [
+      { en: 'A: What do you recommend?', zh: 'A: 有什么推荐的吗？' },
+      { en: 'B: The seafood pasta is our most popular dish.', zh: 'B: 海鲜意粉是我们最受欢迎的菜品。' }
+    ]},
+    { category: '餐饮', level: 1, lines: [
+      { en: 'A: Could I get the check, please?', zh: 'A: 可以帮我结账吗？' },
+      { en: 'B: Sure, would you like to pay together or separately?', zh: 'B: 好的，您要一起付还是分开付？' }
+    ]},
+    { category: '餐饮', level: 2, lines: [
+      { en: 'A: I\'d like to make a reservation for two at 7 p.m.', zh: 'A: 我想预约今晚7点，两个人。' },
+      { en: 'B: We\'re fully booked at 7. How about 7:30?', zh: 'B: 7点已经订满了。7点半可以吗？' }
+    ]},
+    { category: '购物', level: 1, lines: [
+      { en: 'A: Do you have this in a smaller size?', zh: 'A: 这个有小一号的吗？' },
+      { en: 'B: Let me check in the back. I\'ll be right back.', zh: 'B: 我去仓库看看。马上回来。' }
+    ]},
+    { category: '购物', level: 1, lines: [
+      { en: 'A: Can I get a refund if it doesn\'t fit?', zh: 'A: 如果不合适可以退款吗？' },
+      { en: 'B: Yes, you can return it within 7 days with the receipt.', zh: 'B: 可以，凭小票7天内可退换。' }
+    ]},
+    { category: '购物', level: 2, lines: [
+      { en: 'A: Is this on sale?', zh: 'A: 这个在打折吗？' },
+      { en: 'B: It\'s 20% off today. The offer ends tomorrow.', zh: 'B: 今天打八折，优惠明天结束。' }
+    ]},
+    { category: '旅行', level: 2, lines: [
+      { en: 'A: How do I get to the train station from here?', zh: 'A: 从这里去火车站怎么走？' },
+      { en: 'B: Take bus 12 and get off at the third stop.', zh: 'B: 坐12路公交车，第三站下车。' }
+    ]},
+    { category: '旅行', level: 2, lines: [
+      { en: 'A: I\'d like a single room with a view.', zh: 'A: 我想要一间单人房，带景观的。' },
+      { en: 'B: We have one on the 8th floor. Would that be okay?', zh: 'B: 8楼有一间，可以吗？' }
+    ]},
+    { category: '旅行', level: 3, lines: [
+      { en: 'A: My flight got delayed. Can I change to an earlier one?', zh: 'A: 我的航班延误了。能改早一点的航班吗？' },
+      { en: 'B: Let me see. There\'s one at 3 p.m. but it costs extra.', zh: 'B: 我看看。下午3点有一班，但要补差价。' }
+    ]},
+    { category: '社交', level: 1, lines: [
+      { en: 'A: Are you free this weekend?', zh: 'A: 这周末有空吗？' },
+      { en: 'B: Saturday afternoon works for me. What do you have in mind?', zh: 'B: 周六下午可以。你想做什么？' }
+    ]},
+    { category: '社交', level: 2, lines: [
+      { en: 'A: Thanks for inviting me. The party was amazing!', zh: 'A: 谢谢你邀请我，派对太棒了！' },
+      { en: 'B: I\'m so glad you came. Let\'s do it again soon.', zh: 'B: 你能来太好了。我们下次再聚。' }
+    ]},
+    { category: '社交', level: 2, lines: [
+      { en: 'A: I\'m sorry, I can\'t make it tonight.', zh: 'A: 抱歉，我今晚来不了了。' },
+      { en: 'B: No worries. Let\'s catch up another time.', zh: 'B: 没事，我们改天再约。' }
+    ]},
+    { category: '电话', level: 2, lines: [
+      { en: 'A: Hello, may I speak to Mr. Zhang?', zh: 'A: 您好，请问张先生在吗？' },
+      { en: 'B: Speaking. Who\'s calling, please?', zh: 'B: 我就是。请问您是哪位？' }
+    ]},
+    { category: '电话', level: 1, lines: [
+      { en: 'A: I\'ll call you back in ten minutes.', zh: 'A: 我十分钟后再打给你。' },
+      { en: 'B: Okay, I\'ll be waiting.', zh: 'B: 好的，我等你。' }
+    ]},
+    { category: '求助', level: 1, lines: [
+      { en: 'A: Excuse me, could you help me carry this?', zh: 'A: 不好意思，能帮我抬一下这个吗？' },
+      { en: 'B: Of course. Where would you like me to put it?', zh: 'B: 当然可以。你想放哪里？' }
+    ]},
+    { category: '求助', level: 2, lines: [
+      { en: 'A: I\'m lost. Could you tell me where I am?', zh: 'A: 我迷路了。能告诉我这是哪里吗？' },
+      { en: 'B: You\'re on Main Street. The subway is two blocks away.', zh: 'B: 你在主街上。地铁站还有两个街区。' }
+    ]},
+    { category: '情感', level: 2, lines: [
+      { en: 'A: I\'m a bit stressed lately.', zh: 'A: 我最近有点压力大。' },
+      { en: 'B: Wanna talk about it? I\'m here for you.', zh: 'B: 想聊聊吗？我陪你。' }
+    ]},
+    { category: '情感', level: 1, lines: [
+      { en: 'A: I really appreciate your help.', zh: 'A: 真的很感谢你的帮助。' },
+      { en: 'B: Anytime. That\'s what friends are for.', zh: 'B: 随时都可以。朋友就是用来互相帮忙的。' }
+    ]},
+    { category: '观点', level: 2, lines: [
+      { en: 'A: What do you think of remote work?', zh: 'A: 你怎么看待远程办公？' },
+      { en: 'B: I love the flexibility, but it can be lonely sometimes.', zh: 'B: 我喜欢它的灵活性，但有时候会觉得孤单。' }
+    ]},
+    { category: '观点', level: 3, lines: [
+      { en: 'A: Do you think social media is good or bad?', zh: 'A: 你觉得社交媒体是好是坏？' },
+      { en: 'B: It depends. It connects people but also creates pressure.', zh: 'B: 看情况吧。它拉近了人与人之间的距离，但也带来了压力。' }
+    ]},
+    { category: '寒暄', level: 2, lines: [
+      { en: 'A: What have you been up to?', zh: 'A: 最近忙什么呢？' },
+      { en: 'B: Not much, just working and learning English.', zh: 'B: 没忙什么，就是上班和学英语。' }
+    ]},
+    { category: '职场', level: 1, lines: [
+      { en: 'A: Can you give me a hand with this spreadsheet?', zh: 'A: 你能帮我看一下这个表格吗？' },
+      { en: 'B: Sure, let me take a look.', zh: 'B: 当然，我看看。' }
+    ]},
+    { category: '餐饮', level: 1, lines: [
+      { en: 'A: I\'m allergic to peanuts. Is this dish safe?', zh: 'A: 我对花生过敏。这道菜没问题吧？' },
+      { en: 'B: Let me ask the chef to make sure.', zh: 'B: 我去问一下厨师确认一下。' }
+    ]},
+    { category: '购物', level: 2, lines: [
+      { en: 'A: Do you take credit cards?', zh: 'A: 你们收信用卡吗？' },
+      { en: 'B: Yes, we accept all major cards and mobile pay.', zh: 'B: 收的，主流信用卡和移动支付都可以。' }
+    ]},
+    { category: '旅行', level: 1, lines: [
+      { en: 'A: Is breakfast included?', zh: 'A: 早餐包含在内吗？' },
+      { en: 'B: Yes, it\'s served from 7 to 10 a.m.', zh: 'B: 是的，早餐时间是早上7点到10点。' }
+    ]},
+    { category: '社交', level: 1, lines: [
+      { en: 'A: Let\'s keep in touch.', zh: 'A: 常联系啊。' },
+      { en: 'B: Definitely. I\'ll text you later.', zh: 'B: 一定。我晚点给你发消息。' }
+    ]},
+    { category: '电话', level: 2, lines: [
+      { en: 'A: Could you transfer me to the sales department?', zh: 'A: 能帮我转接到销售部吗？' },
+      { en: 'B: One moment, please. I\'ll connect you.', zh: 'B: 请稍等，我帮您转接。' }
+    ]},
+    { category: '求助', level: 1, lines: [
+      { en: 'A: Could you tell me how to use this machine?', zh: 'A: 能告诉我这台机器怎么用吗？' },
+      { en: 'B: Of course. Just press the green button to start.', zh: 'B: 当然。按绿色按钮开始就行。' }
+    ]},
+    { category: '情感', level: 2, lines: [
+      { en: 'A: I feel like I\'m falling behind.', zh: 'A: 我觉得自己落后了。' },
+      { en: 'B: Everyone moves at their own pace. You\'re doing fine.', zh: 'B: 每个人都有自己的节奏。你已经做得很好了。' }
+    ]},
+    { category: '观点', level: 1, lines: [
+      { en: 'A: I prefer tea to coffee.', zh: 'A: 比起咖啡我更喜欢茶。' },
+      { en: 'B: Same here. Coffee makes me too jittery.', zh: 'B: 我也是。咖啡让我太亢奋了。' }
+    ]},
+    { category: '职场', level: 2, lines: [
+      { en: 'A: Let\'s touch base next Monday morning.', zh: 'A: 我们下周一上午碰一下。' },
+      { en: 'B: Sounds good. I\'ll put it on my calendar.', zh: 'B: 好的。我会记在日历上。' }
+    ]},
+    { category: '餐饮', level: 2, lines: [
+      { en: 'A: This tastes amazing! What\'s in it?', zh: 'A: 这个太好吃了！里面放了什么？' },
+      { en: 'B: It\'s our secret sauce. Glad you like it!', zh: 'B: 这是我们的秘制酱料。你喜欢就好！' }
+    ]},
+    { category: '购物', level: 1, lines: [
+      { en: 'A: I\'m just looking, thanks.', zh: 'A: 我先看看，谢谢。' },
+      { en: 'B: Take your time. Let me know if you need anything.', zh: 'B: 慢慢来。需要帮忙叫我。' }
+    ]},
+    { category: '旅行', level: 2, lines: [
+      { en: 'A: Where can I exchange some money?', zh: 'A: 哪里可以换钱？' },
+      { en: 'B: There\'s a currency exchange on the second floor.', zh: 'B: 二楼有一家货币兑换点。' }
+    ]},
+    { category: '社交', level: 2, lines: [
+      { en: 'A: Do you want to grab lunch together?', zh: 'A: 一起吃午饭吗？' },
+      { en: 'B: Sure, I know a great place nearby.', zh: 'B: 好啊，我知道附近一家不错的店。' }
+    ]},
+    { category: '电话', level: 1, lines: [
+      { en: 'A: Sorry, I think you have the wrong number.', zh: 'A: 抱歉，你打错电话了。' },
+      { en: 'B: Oh, I\'m sorry. Have a good day.', zh: 'B: 啊，不好意思。祝你今天愉快。' }
+    ]},
+    { category: '求助', level: 2, lines: [
+      { en: 'A: My phone died. Can I borrow your charger?', zh: 'A: 我手机没电了。能借我充电器吗？' },
+      { en: 'B: Sure, here you go. There\'s an outlet over there too.', zh: 'B: 当然可以，给你。那边也有插座。' }
+    ]},
+    { category: '情感', level: 1, lines: [
+      { en: 'A: I\'m so happy for you!', zh: 'A: 真为你高兴！' },
+      { en: 'B: Thank you! That means a lot.', zh: 'B: 谢谢！这句话对我很重要。' }
+    ]},
+    { category: '观点', level: 2, lines: [
+      { en: 'A: I think waking up early changes everything.', zh: 'A: 我觉得早起能改变一切。' },
+      { en: 'B: I agree. Mornings are so peaceful.', zh: 'B: 我同意。早晨特别安静。' }
+    ]},
+    { category: '寒暄', level: 1, lines: [
+      { en: 'A: What\'s new with you?', zh: 'A: 最近有什么新鲜事吗？' },
+      { en: 'B: Not much. Just planning a short trip.', zh: 'B: 没什么。正在计划一次短途旅行。' }
+    ]},
+    { category: '职场', level: 3, lines: [
+      { en: 'A: We\'re falling behind schedule. What should we do?', zh: 'A: 我们进度落后了。怎么办？' },
+      { en: 'B: Let\'s add one more person to the team and work overtime this week.', zh: 'B: 我们给团队加个人，这周加个班吧。' }
+    ]},
+    { category: '餐饮', level: 1, lines: [
+      { en: 'A: Can I get a glass of water, please?', zh: 'A: 能给我一杯水吗？' },
+      { en: 'B: Still or sparkling?', zh: 'B: 要普通水还是气泡水？' }
+    ]},
+    { category: '购物', level: 2, lines: [
+      { en: 'A: Do you have any promotions going on?', zh: 'A: 现在有什么促销活动吗？' },
+      { en: 'B: Buy two get one free on selected items.', zh: 'B: 部分商品买二送一。' }
+    ]},
+    { category: '旅行', level: 1, lines: [
+      { en: 'A: What time does the museum open?', zh: 'A: 博物馆几点开门？' },
+      { en: 'B: It opens at 9 a.m. and closes at 5 p.m.', zh: 'B: 上午9点开门，下午5点关门。' }
+    ]},
+    { category: '社交', level: 1, lines: [
+      { en: 'A: It was great chatting with you.', zh: 'A: 和你聊天很开心。' },
+      { en: 'B: Likewise. Let\'s do this again soon.', zh: 'B: 我也是。我们下次再聊。' }
+    ]},
+    { category: '电话', level: 2, lines: [
+      { en: 'A: Can you leave a message?', zh: 'A: 你能留个言吗？' },
+      { en: 'B: Please tell him I called. It\'s about the meeting.', zh: 'B: 请告诉他我打过电话。是关于会议的事。' }
+    ]},
+    { category: '求助', level: 1, lines: [
+      { en: 'A: Could you take a photo for me?', zh: 'A: 能帮我拍张照吗？' },
+      { en: 'B: Sure. Say cheese!', zh: 'B: 当然。说茄子！' }
+    ]},
+    { category: '情感', level: 3, lines: [
+      { en: 'A: I don\'t know what to do anymore.', zh: 'A: 我不知道该怎么办了。' },
+      { en: 'B: Take a deep breath. We\'ll figure it out together.', zh: 'B: 深呼吸。我们一起想办法。' }
+    ]},
+    { category: '观点', level: 2, lines: [
+      { en: 'A: Do you believe in work-life balance?', zh: 'A: 你相信工作和生活要平衡吗？' },
+      { en: 'B: Absolutely. Burnout helps no one.', zh: 'B: 当然。精疲力竭对谁都没好处。' }
+    ]},
+    { category: '职场', level: 1, lines: [
+      { en: 'A: See you at the meeting.', zh: 'A: 会议上见。' },
+      { en: 'B: See you there. I\'ll prepare the slides.', zh: 'B: 一会儿见。我会准备好幻灯片。' }
+    ]},
+    { category: '餐饮', level: 2, lines: [
+      { en: 'A: The bill, please. And could I get a takeaway box?', zh: 'A: 请结账。另外能给我个打包盒吗？' },
+      { en: 'B: Of course. I\'ll bring it right away.', zh: 'B: 当然。我马上拿过来。' }
+    ]},
+    { category: '购物', level: 1, lines: [
+      { en: 'A: How much is this?', zh: 'A: 这个多少钱？' },
+      { en: 'B: It\'s 128 yuan. Would you like a bag?', zh: 'B: 128元。需要袋子吗？' }
+    ]},
+    { category: '旅行', level: 2, lines: [
+      { en: 'A: Is there a luggage storage service?', zh: 'A: 有行李寄存服务吗？' },
+      { en: 'B: Yes, it\'s next to the front desk.', zh: 'B: 有的，在前台旁边。' }
+    ]},
+    { category: '社交', level: 2, lines: [
+      { en: 'A: What kind of music do you like?', zh: 'A: 你喜欢什么类型的音乐？' },
+      { en: 'B: I\'m into indie and R&B lately.', zh: 'B: 最近我喜欢独立音乐和R&B。' }
+    ]},
+    { category: '电话', level: 1, lines: [
+      { en: 'A: Who\'s speaking, please?', zh: 'A: 请问您是哪位？' },
+      { en: 'B: This is Li Wei from ABC Company.', zh: 'B: 我是ABC公司的李伟。' }
+    ]},
+    { category: '求助', level: 2, lines: [
+      { en: 'A: I missed my stop. What should I do?', zh: 'A: 我坐过站了。怎么办？' },
+      { en: 'B: Get off at the next stop and take the train back.', zh: 'B: 下一站下车，再坐回去。' }
+    ]},
+    { category: '情感', level: 1, lines: [
+      { en: 'A: You look upset. Is everything okay?', zh: 'A: 你看起来不太开心。没事吧？' },
+      { en: 'B: I\'m fine, just a little tired.', zh: 'B: 没事，就是有点累。' }
+    ]},
+    { category: '观点', level: 3, lines: [
+      { en: 'A: Should young people buy a house early?', zh: 'A: 年轻人应该早点买房吗？' },
+      { en: 'B: It depends on the city and their financial situation.', zh: 'B: 这要看城市和他们的经济状况。' }
+    ]},
+    { category: '寒暄', level: 1, lines: [
+      { en: 'A: Hi! How\'s your day going?', zh: 'A: 嗨！今天过得怎么样？' },
+      { en: 'B: Not bad. How about yours?', zh: 'B: 还不错。你呢？' }
+    ]},
+    { category: '职场', level: 2, lines: [
+      { en: 'A: Can you review this document before I send it?', zh: 'A: 你能在发之前帮我看一下这份文件吗？' },
+      { en: 'B: Sure, send it over. I\'ll check it now.', zh: 'B: 当然，发过来吧。我现在就看。' }
+    ]},
+    { category: '餐饮', level: 1, lines: [
+      { en: 'A: I\'d like my steak medium rare.', zh: 'A: 我的牛排要三分熟。' },
+      { en: 'B: Got it. Would you like any sides?', zh: 'B: 好的。要配什么配菜吗？' }
+    ]},
+    { category: '购物', level: 2, lines: [
+      { en: 'A: Can I try this on?', zh: 'A: 我能试一下吗？' },
+      { en: 'B: Sure, the fitting room is over there.', zh: 'B: 可以，试衣间在那边。' }
+    ]},
+    { category: '旅行', level: 3, lines: [
+      { en: 'A: My passport is missing. What should I do?', zh: 'A: 我的护照不见了。怎么办？' },
+      { en: 'B: Report it to the police first, then contact the embassy.', zh: 'B: 先报警，然后联系大使馆。' }
+    ]},
+    { category: '社交', level: 1, lines: [
+      { en: 'A: Happy birthday! This is for you.', zh: 'A: 生日快乐！这是给你的。' },
+      { en: 'B: Thank you so much. You shouldn\'t have!', zh: 'B: 太谢谢了。你太客气了！' }
+    ]},
+    { category: '电话', level: 2, lines: [
+      { en: 'A: I\'ll put you on hold for a moment.', zh: 'A: 请稍等，我让您听一下音乐。' },
+      { en: 'B: Okay, no problem.', zh: 'B: 好的，没问题。' }
+    ]},
+    { category: '求助', level: 1, lines: [
+      { en: 'A: Excuse me, is this seat taken?', zh: 'A: 不好意思，这个座位有人吗？' },
+      { en: 'B: No, feel free to sit here.', zh: 'B: 没有，请坐。' }
+    ]},
+    { category: '情感', level: 2, lines: [
+      { en: 'A: I\'m proud of you.', zh: 'A: 我为你骄傲。' },
+      { en: 'B: That\'s so sweet of you to say.', zh: 'B: 你这么说真好。' }
+    ]},
+    { category: '观点', level: 1, lines: [
+      { en: 'A: I think reading is the best habit.', zh: 'A: 我觉得阅读是最好的习惯。' },
+      { en: 'B: I couldn\'t agree more. It opens your mind.', zh: 'B: 完全同意。阅读能开阔眼界。' }
+    ]},
+    { category: '职场', level: 2, lines: [
+      { en: 'A: The client wants to move the deadline up.', zh: 'A: 客户想把截止日期提前。' },
+      { en: 'B: That\'s tight. Let\'s see what we can prioritize.', zh: 'B: 时间很紧。我们看看能优先做哪些。' }
+    ]},
+    { category: '餐饮', level: 1, lines: [
+      { en: 'A: I\'ll have what she\'s having.', zh: 'A: 我要和她一样的。' },
+      { en: 'B: Good choice. It\'s one of our best sellers.', zh: 'B: 好选择。这是我们的畅销款。' }
+    ]},
+    { category: '购物', level: 2, lines: [
+      { en: 'A: Can I get a gift receipt?', zh: 'A: 能给我一张礼品收据吗？' },
+      { en: 'B: Sure, I\'ll include one in the bag.', zh: 'B: 好的，我会放在袋子里。' }
+    ]},
+    { category: '旅行', level: 1, lines: [
+      { en: 'A: Is Wi-Fi free?', zh: 'A: Wi-Fi是免费的吗？' },
+      { en: 'B: Yes, the password is on the table.', zh: 'B: 是的，密码在桌上。' }
+    ]},
+    { category: '社交', level: 2, lines: [
+      { en: 'A: Are you coming to the get-together?', zh: 'A: 你要来参加聚会吗？' },
+      { en: 'B: I wouldn\'t miss it for the world.', zh: 'B: 我当然要来，怎么可能错过。' }
+    ]},
+    { category: '电话', level: 1, lines: [
+      { en: 'A: I\'ll get straight to the point.', zh: 'A: 我直说吧。' },
+      { en: 'B: Please do.', zh: 'B: 请讲。' }
+    ]},
+    { category: '求助', level: 2, lines: [
+      { en: 'A: My car broke down. Can you pick me up?', zh: 'A: 我的车抛锚了。你能来接我吗？' },
+      { en: 'B: Of course. Send me your location.', zh: 'B: 当然。把你的位置发我。' }
+    ]},
+    { category: '情感', level: 1, lines: [
+      { en: 'A: I missed you.', zh: 'A: 我想你了。' },
+      { en: 'B: I missed you too.', zh: 'B: 我也想你了。' }
+    ]},
+    { category: '观点', level: 2, lines: [
+      { en: 'A: I think learning a language is like building a muscle.', zh: 'A: 我觉得学语言就像练肌肉。' },
+      { en: 'B: Exactly. Consistency matters more than talent.', zh: 'B: 没错。坚持比天赋更重要。' }
+    ]},
+    { category: '寒暄', level: 1, lines: [
+      { en: 'A: Good to see you again!', zh: 'A: 很高兴又见到你！' },
+      { en: 'B: You too! How was your weekend?', zh: 'B: 我也是！周末过得怎么样？' }
+    ]},
+    { category: '职场', level: 2, lines: [
+      { en: 'A: Can we go over the proposal one more time?', zh: 'A: 我们能再过一遍提案吗？' },
+      { en: 'B: Sure. I\'ll share my screen.', zh: 'B: 好的。我共享一下屏幕。' }
+    ]},
+    { category: '餐饮', level: 2, lines: [
+      { en: 'A: Is it possible to make this less spicy?', zh: 'A: 这个能做少一点辣吗？' },
+      { en: 'B: Absolutely. I\'ll tell the kitchen.', zh: 'B: 当然可以。我跟厨房说一声。' }
+    ]},
+    { category: '购物', level: 1, lines: [
+      { en: 'A: I\'ll take it.', zh: 'A: 我买了。' },
+      { en: 'B: Great. Cash or card?', zh: 'B: 好的。现金还是刷卡？' }
+    ]},
+    { category: '旅行', level: 2, lines: [
+      { en: 'A: Can you recommend a local restaurant?', zh: 'A: 你能推荐一家本地餐厅吗？' },
+      { en: 'B: Try the noodle shop around the corner. It\'s delicious.', zh: 'B: 拐角那家面馆不错，很好吃。' }
+    ]},
+    { category: '社交', level: 1, lines: [
+      { en: 'A: Let me know next time you\'re free.', zh: 'A: 你下次有空告诉我。' },
+      { en: 'B: Will do. We should hang out more.', zh: 'B: 一定。我们应该多聚聚。' }
+    ]},
+    { category: '电话', level: 2, lines: [
+      { en: 'A: I\'m calling about the job posting.', zh: 'A: 我打电话来咨询招聘信息。' },
+      { en: 'B: Thank you for your interest. Let\'s schedule an interview.', zh: 'B: 感谢您的关注。我们来安排一次面试吧。' }
+    ]},
+    { category: '求助', level: 1, lines: [
+      { en: 'A: Could you repeat that more slowly?', zh: 'A: 能再说慢一点吗？' },
+      { en: 'B: Of course. I said the meeting is at 3 p.m.', zh: 'B: 当然。我说会议是下午3点。' }
+    ]},
+    { category: '情感', level: 2, lines: [
+      { en: 'A: I\'m sorry for what I said.', zh: 'A: 我为我说过的话道歉。' },
+      { en: 'B: It\'s okay. We all have bad days.', zh: 'B: 没事。谁都有心情不好的时候。' }
+    ]},
+    { category: '观点', level: 2, lines: [
+      { en: 'A: Do you prefer city life or country life?', zh: 'A: 你喜欢城市生活还是乡村生活？' },
+      { en: 'B: I like the convenience of the city, but I miss the quiet.', zh: 'B: 我喜欢城市的便利，但想念乡村的安静。' }
+    ]},
+    { category: '职场', level: 1, lines: [
+      { en: 'A: Have a great day at work!', zh: 'A: 祝你今天工作顺利！' },
+      { en: 'B: Thanks, you too!', zh: 'B: 谢谢，你也是！' }
+    ]},
+    { category: '餐饮', level: 1, lines: [
+      { en: 'A: Can I see the menu, please?', zh: 'A: 可以给我看一下菜单吗？' },
+      { en: 'B: Here you go. Today\'s specials are on the first page.', zh: 'B: 给您。今日特餐在第一页。' }
+    ]},
+    { category: '购物', level: 2, lines: [
+      { en: 'A: It\'s a bit pricey. Can you give me a discount?', zh: 'A: 有点贵。能便宜点吗？' },
+      { en: 'B: I can give you 5% off if you pay cash.', zh: 'B: 如果你付现金，我可以给你九五折。' }
+    ]},
+    { category: '旅行', level: 1, lines: [
+      { en: 'A: Where is the nearest restroom?', zh: 'A: 最近的洗手间在哪里？' },
+      { en: 'B: Go straight and turn left. It\'s next to the elevator.', zh: 'B: 直走然后左转。在电梯旁边。' }
+    ]},
+    { category: '社交', level: 2, lines: [
+      { en: 'A: Your outfit looks amazing today.', zh: 'A: 你今天穿得好漂亮。' },
+      { en: 'B: Thank you! That\'s so kind of you.', zh: 'B: 谢谢！你真好。' }
+    ]},
+    { category: '电话', level: 1, lines: [
+      { en: 'A: Sorry to keep you waiting.', zh: 'A: 抱歉让您久等了。' },
+      { en: 'B: No problem. What\'s the update?', zh: 'B: 没事。有什么进展吗？' }
+    ]},
+    { category: '求助', level: 2, lines: [
+      { en: 'A: Can you watch my bag for a second?', zh: 'A: 能帮我看一下包吗？' },
+      { en: 'B: Sure, I\'ll keep an eye on it.', zh: 'B: 当然，我帮你看着。' }
+    ]},
+    { category: '情感', level: 1, lines: [
+      { en: 'A: I\'m here if you need to talk.', zh: 'A: 如果你想聊聊，我随时在。' },
+      { en: 'B: That really means a lot to me.', zh: 'B: 这对我来说真的很重要。' }
+    ]},
+    { category: '观点', level: 2, lines: [
+      { en: 'A: I think taking breaks makes you more productive.', zh: 'A: 我觉得休息能让你更高效。' },
+      { en: 'B: Totally. Rest is part of the work.', zh: 'B: 完全同意。休息也是工作的一部分。' }
+    ]},
+    { category: '寒暄', level: 1, lines: [
+      { en: 'A: See you later!', zh: 'A: 回头见！' },
+      { en: 'B: See you! Take care.', zh: 'B: 再见！保重。' }
+    ]},
+  ];
 
-  function getTodayPractice() {
-    const tk = todayKey();
-    if (!studyPracticeByDate[tk]) studyPracticeByDate[tk] = {};
-    return studyPracticeByDate[tk];
+  // 英语学习状态已在顶部状态区统一初始化
+
+  function getStudyDateKey() {
+    const d = new Date();
+    d.setDate(d.getDate() + studyDateOffset);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   }
-  function renderStudyTasks() {
-    const list = document.getElementById('studyPracticeList');
-    const today = getTodayPractice();
-    const totalToday = studyPractices.reduce((s, p) => s + (today[p.key] || 0), 0);
-    document.getElementById('studyDoneText').textContent = `今日 ${totalToday} 次碎片练习`;
-    document.getElementById('studyProgressFill').style.width = totalToday ? '100%' : '0%';
-
-    list.innerHTML = studyPractices.map((p, pi) => {
-      const cnt = today[p.key] || 0;
-      const item = p.items[studyItemIdx[pi] % p.items.length];
-      const tagClass = `tag-${p.color}`;
-      const accentColor = {orange:'#d97a1c',blue:'#3a5a8a',green:'#4a6b3a',purple:'#7a3a8a',yellow:'#b8881f'}[p.color];
-      return `
-      <div class="content-card study-card" data-pi="${pi}" style="border-left:3px solid ${accentColor};">
-        <div class="study-card-head" data-act="study-toggle" data-pi="${pi}">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-size:20px;">${p.emoji}</span>
-            <div>
-              <div style="font-weight:600;font-size:14px;">${p.name} <span class="tag ${tagClass}" style="font-size:9px;padding:1px 6px;margin-left:2px;">${p.mins}</span></div>
-              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">今日 ${cnt} 次 · ${p.tip}</div>
-            </div>
-          </div>
-          <span class="study-arrow" style="color:var(--text-muted);font-size:12px;">展开 ▾</span>
-        </div>
-        <div class="study-card-body" id="study-body-${pi}" style="display:none;">
-          ${p.key === 'vocab' ? renderVocabBody(item, pi) : ''}
-          ${p.key === 'speak' ? renderSpeakBody(item, pi) : ''}
-          ${(p.key === 'listen' || p.key === 'shadow' || p.key === 'retell') ? renderListenBody(p, item, pi) : ''}
-          <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
-            <button class="btn btn-primary" style="flex:none;padding:5px 14px;font-size:12px;" data-act="study-done" data-pi="${pi}">✓ 完成本次</button>
-            <button class="btn" style="flex:none;padding:5px 12px;font-size:12px;background:var(--bg-page);" data-act="study-next" data-pi="${pi}">换一条 ↻</button>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-
-    // 周统计
-    const weekKeys = [];
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(); d.setDate(d.getDate() - i);
-      weekKeys.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`);
+  function getStudyDateLabel() {
+    if (studyDateOffset === 0) return '今天';
+    if (studyDateOffset === -1) return '昨天';
+    if (studyDateOffset === 1) return '明天';
+    const k = getStudyDateKey();
+    return dateKeyLabel(k);
+  }
+  // 根据日期偏移抽取当日 30 条对话（同一日期固定）
+  function getDailyDialogues() {
+    const perDay = 30;
+    const start = ((studyDateOffset % dialoguePool.length) + dialoguePool.length) % dialoguePool.length;
+    const arr = [];
+    for (let i = 0; i < perDay; i++) {
+      const poolIdx = (start + i) % dialoguePool.length;
+      arr.push({ ...dialoguePool[poolIdx], dailyIdx: i, poolIdx });
     }
-    let weekTotal = 0, weekDays = 0;
-    weekKeys.forEach(k => {
-      const day = studyPracticeByDate[k] || {};
-      const n = Object.values(day).reduce((s,v)=>s+v, 0);
-      weekTotal += n;
-      if (n > 0) weekDays++;
-    });
-    document.getElementById('weekStat').textContent = `本周完成 ${weekTotal} 次 · 覆盖 ${weekDays} 天`;
+    return arr;
   }
-  function renderListenBody(p, item, pi) {
-    const showZh = p.key === 'retell'; // 复述默认先显示中文
-    const enLabel = p.key === 'retell' ? '参考英文' : '英文';
-    return `
-      <div class="study-sentence" id="study-en-${pi}" style="font-size:15px;line-height:1.5;color:var(--text-primary);margin:6px 0;font-weight:500;">${showZh ? '点击下方"显示英文"' : escapeHtml(item.en)}</div>
-      <div id="study-zh-${pi}" style="font-size:13px;color:var(--text-secondary);margin:4px 0;display:${showZh?'block':'none'};">${escapeHtml(item.zh)}</div>
-      <div id="study-zh-hidden-${pi}" style="font-size:13px;color:var(--text-secondary);margin:4px 0;display:${showZh?'none':'block'};">点击"显示中文"查看译文</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
-        <button class="btn" style="padding:5px 12px;font-size:12px;background:#fff3d6;color:#b8881f;border:1px solid #f0d68a;" data-act="study-play" data-pi="${pi}">🔊 朗读</button>
-        <button class="btn" style="padding:5px 12px;font-size:12px;background:var(--bg-page);" data-act="study-reveal" data-pi="${pi}">${showZh?'显示英文':'显示中文'}</button>
-      </div>`;
+  function getDayPractice(key) {
+    if (!studyPracticeByDate[key]) studyPracticeByDate[key] = {};
+    return studyPracticeByDate[key];
   }
-  function renderSpeakBody(item, pi) {
-    return `
-      <div style="font-size:15px;line-height:1.5;color:var(--text-primary);margin:6px 0;font-weight:500;">💬 ${escapeHtml(item.zh)}</div>
-      <div style="font-size:12px;color:var(--text-muted);margin:4px 0;">提示词（可参考）：${escapeHtml(item.en)}</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center;">
-        <button class="btn" style="padding:5px 12px;font-size:12px;background:#e6f0db;color:#4a6b3a;border:1px solid #c5d9a8;" data-act="study-timer" data-pi="${pi}">⏱ 计时 1 分钟</button>
-        <span id="study-timer-display-${pi}" style="font-size:13px;color:var(--text-muted);">未开始</span>
-      </div>`;
-  }
-  function renderVocabBody(item, pi) {
-    return `
-      <div style="font-size:20px;font-weight:700;color:var(--text-primary);margin:6px 0;">${escapeHtml(item.zh)}</div>
-      <div id="study-word-en-${pi}" style="font-size:14px;color:var(--text-secondary);margin:4px 0;">点击"显示英文"查看</div>
-      <div id="study-word-ex-${pi}" style="font-size:12px;color:var(--text-muted);margin:4px 0;display:none;font-style:italic;">${escapeHtml(item.ex)}</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
-        <button class="btn" style="padding:5px 12px;font-size:12px;background:#efe3f3;color:#7a3a8a;border:1px solid #dcc8e3;" data-act="study-reveal-word" data-pi="${pi}">显示英文</button>
-        <button class="btn" style="padding:5px 12px;font-size:12px;background:#fff3d6;color:#b8881f;border:1px solid #f0d68a;" data-act="study-play-word" data-pi="${pi}">🔊 发音</button>
-      </div>`;
+  function isFav(poolIdx) { return studyFavorites.includes(poolIdx); }
+  function toggleFav(poolIdx) {
+    const idx = studyFavorites.indexOf(poolIdx);
+    if (idx >= 0) studyFavorites.splice(idx, 1); else studyFavorites.push(poolIdx);
   }
   function speakEN(text) {
     if (!('speechSynthesis' in window)) { toast('浏览器不支持语音朗读'); return; }
@@ -982,75 +1313,116 @@
     u.lang = 'en-US'; u.rate = 0.9; u.pitch = 1;
     speechSynthesis.speak(u);
   }
-  function studyToggle(pi) {
-    const body = document.getElementById('study-body-' + pi);
-    const arrow = document.querySelector(`.study-card[data-pi="${pi}"] .study-arrow`);
-    const open = body.style.display !== 'none';
-    body.style.display = open ? 'none' : 'block';
-    arrow.textContent = open ? '展开 ▾' : '收起 ▴';
+  function speakDialogue(dailyIdx) {
+    const d = getDailyDialogues()[dailyIdx];
+    const text = d.lines.map(l => l.en.replace(/^[A-Z]: /, '')).join(' ');
+    speakEN(text);
   }
-  function studyDone(pi) {
-    const today = getTodayPractice();
-    today[studyPractices[pi].key] = (today[studyPractices[pi].key] || 0) + 1;
-    saveStore(); renderStudyTasks();
-    toast(`完成 1 次 ${studyPractices[pi].name}！`);
+  function renderCategories() {
+    const wrap = document.getElementById('studyCategories');
+    wrap.innerHTML = studyCategoriesDef.map(c => {
+      const active = studyFilter === c.key ? 'active' : '';
+      return `<span class="study-cat-chip ${active}" data-act="study-filter" data-cat="${c.key}">${c.emoji} ${c.label}</span>`;
+    }).join('');
   }
-  function studyNext(pi) {
-    studyItemIdx[pi] = (studyItemIdx[pi] + 1) % studyPractices[pi].items.length;
-    renderStudyTasks();
-    // 保持展开
-    const body = document.getElementById('study-body-' + pi);
-    if (body) { body.style.display = 'block'; document.querySelector(`.study-card[data-pi="${pi}"] .study-arrow`).textContent = '收起 ▴'; }
-  }
-  function studyPlay(pi) {
-    const p = studyPractices[pi];
-    const item = p.items[studyItemIdx[pi] % p.items.length];
-    speakEN(item.en);
-  }
-  function studyReveal(pi) {
-    const p = studyPractices[pi];
-    const item = p.items[studyItemIdx[pi] % p.items.length];
-    if (p.key === 'retell') {
-      // 复述：显示英文
-      const enEl = document.getElementById('study-en-' + pi);
-      if (enEl.textContent.includes('点击下方')) { enEl.textContent = item.en; }
-    } else {
-      // 听力/跟读：显示中文
-      const zh = document.getElementById('study-zh-' + pi);
-      const hidden = document.getElementById('study-zh-hidden-' + pi);
-      zh.style.display = 'block'; zh.textContent = item.zh;
-      if (hidden) hidden.style.display = 'none';
+  function updateStudyStats() {
+    const key = getStudyDateKey();
+    const day = getDayPractice(key);
+    const dialogues = getDailyDialogues();
+    const todayDone = dialogues.filter(d => day[d.dailyIdx]).length;
+
+    // 连续天数
+    let streak = 0;
+    for (let i = 0; i < 365; i++) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const dayData = studyPracticeByDate[k] || {};
+      if (Object.values(dayData).some(v => v)) streak++; else break;
     }
+
+    document.getElementById('statToday').textContent = `${todayDone}/${dialogues.length}`;
+    document.getElementById('statTotal').textContent = studyTotalCount;
+    document.getElementById('statFav').textContent = studyFavorites.length;
+    document.getElementById('statStreak').textContent = streak;
   }
-  function studyRevealWord(pi) {
-    const p = studyPractices[pi];
-    const item = p.items[studyItemIdx[pi] % p.items.length];
-    document.getElementById('study-word-en-' + pi).textContent = item.en;
-    document.getElementById('study-word-ex-' + pi).style.display = 'block';
+  function renderStudyTasks() {
+    renderCategories();
+    document.getElementById('studyDateLabel').textContent = getStudyDateLabel();
+    const zhBtn = document.getElementById('studyZhToggle');
+    zhBtn.textContent = studyShowZh ? '中文翻译 开' : '中文翻译 关';
+    zhBtn.classList.toggle('active', studyShowZh);
+
+    const key = getStudyDateKey();
+    const day = getDayPractice(key);
+    let dialogues = getDailyDialogues();
+    if (studyFilter === 'fav') dialogues = dialogues.filter(d => isFav(d.poolIdx));
+    else if (studyFilter === 'unpractice') dialogues = dialogues.filter(d => !day[d.dailyIdx]);
+    else if (studyFilter !== 'all') dialogues = dialogues.filter(d => d.category === studyFilter);
+
+    const list = document.getElementById('studyDialogueList');
+    const empty = document.getElementById('studyEmpty');
+    if (dialogues.length === 0) { list.innerHTML = ''; empty.style.display = 'block'; }
+    else {
+      empty.style.display = 'none';
+      list.innerHTML = dialogues.map((d, i) => {
+        const done = !!day[d.dailyIdx];
+        const fav = isFav(d.poolIdx);
+        const catDef = studyCategoriesDef.find(c => c.key === d.category) || { emoji: '🏷️' };
+        const stars = '★'.repeat(d.level) + '☆'.repeat(3 - d.level);
+        return `
+        <div class="study-dialogue-card" data-daily-idx="${d.dailyIdx}">
+          <div class="study-dialogue-head">
+            <div class="study-dialogue-meta">
+              <span class="tag tag-orange" style="font-size:10px;padding:2px 7px;">${catDef.emoji} ${d.category}</span>
+              <span class="study-dialogue-level">${stars}</span>
+            </div>
+            <span class="study-dialogue-idx">#${d.dailyIdx + 1}</span>
+          </div>
+          <div class="study-dialogue-body">
+            ${d.lines.map(l => `<div class="study-dialogue-line">${escapeHtml(l.en)}</div>`).join('')}
+            ${studyShowZh ? `<div class="study-dialogue-zh">${d.lines.map(l => escapeHtml(l.zh)).join('<br>')}</div>` : ''}
+          </div>
+          <div class="study-dialogue-actions">
+            <button class="btn" style="background:#fff3d6;color:#b8881f;border:1px solid #f0d68a;" data-act="study-speak" data-idx="${d.dailyIdx}">🔊 朗读</button>
+            <button class="btn btn-done ${done?'active':''}" data-act="study-practice" data-idx="${d.dailyIdx}">${done?'✓ 已练':'✓ 标记已练'}</button>
+            <button class="btn btn-fav ${fav?'active':''}" data-act="study-fav" data-idx="${d.dailyIdx}">${fav?'⭐ 已收藏':'☆ 收藏'}</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+    updateStudyStats();
   }
-  function studyPlayWord(pi) {
-    const p = studyPractices[pi];
-    const item = p.items[studyItemIdx[pi] % p.items.length];
-    speakEN(item.en);
+  function togglePractice(dailyIdx) {
+    const key = getStudyDateKey();
+    const day = getDayPractice(key);
+    const d = getDailyDialogues()[dailyIdx];
+    if (day[dailyIdx]) {
+      delete day[dailyIdx];
+      studyTotalCount = Math.max(0, studyTotalCount - 1);
+    } else {
+      day[dailyIdx] = true;
+      studyTotalCount += 1;
+    }
+    saveStore(); renderStudyTasks();
   }
-  function studyTimer(pi) {
-    const display = document.getElementById('study-timer-display-' + pi);
-    if (studyTimerId) { clearInterval(studyTimerId); studyTimerId = null; }
-    let sec = 60;
-    display.textContent = `剩余 ${sec}s`;
-    display.style.color = '#c84545';
-    studyTimerId = setInterval(() => {
-      sec--;
-      display.textContent = `剩余 ${sec}s`;
-      if (sec <= 0) {
-        clearInterval(studyTimerId); studyTimerId = null;
-        display.textContent = '⏰ 时间到！可以点"完成本次"';
-        display.style.color = '#4a6b3a';
-        // 震动反馈（手机）
-        if (navigator.vibrate) navigator.vibrate([200,100,200]);
-        toast('⏰ 时间到！');
-      }
-    }, 1000);
+  function markAllDone() {
+    const key = getStudyDateKey();
+    const day = getDayPractice(key);
+    const dialogues = getDailyDialogues();
+    let added = 0;
+    dialogues.forEach(d => { if (!day[d.dailyIdx]) { day[d.dailyIdx] = true; added++; } });
+    if (added === 0) { toast('今天已经全部练过啦'); return; }
+    studyTotalCount += added;
+    saveStore(); renderStudyTasks();
+    toast(`已标记 ${added} 条为已练`);
+  }
+  function toggleZh() {
+    studyShowZh = !studyShowZh;
+    saveStore(); renderStudyTasks();
+  }
+  function changeDay(delta) {
+    studyDateOffset += delta;
+    saveStore(); renderStudyTasks();
   }
   renderTasks();
 
@@ -1178,15 +1550,17 @@
       if (tasksByDate[key].length === 0) delete tasksByDate[key];
       saveStore(); renderTasks(); toast('已删除');
     }
-    else if (act === 'study-toggle') { studyToggle(+el.dataset.pi); }
-    else if (act === 'study-done') { studyDone(+el.dataset.pi); }
-    else if (act === 'study-next') { studyNext(+el.dataset.pi); }
-    else if (act === 'study-play') { studyPlay(+el.dataset.pi); }
-    else if (act === 'study-reveal') { studyReveal(+el.dataset.pi); }
-    else if (act === 'study-reveal-word') { studyRevealWord(+el.dataset.pi); }
-    else if (act === 'study-play-word') { studyPlayWord(+el.dataset.pi); }
-    else if (act === 'study-timer') { studyTimer(+el.dataset.pi); }
-    else if (act === 'study-checkin') { toast('打卡成功，碎片练习继续加油！'); }
+    else if (act === 'study-prev-day') { changeDay(-1); }
+    else if (act === 'study-next-day') { changeDay(1); }
+    else if (act === 'study-toggle-zh') { toggleZh(); }
+    else if (act === 'study-mark-all') { markAllDone(); }
+    else if (act === 'study-filter') { studyFilter = el.dataset.cat; saveStore(); renderStudyTasks(); }
+    else if (act === 'study-speak') { speakDialogue(+el.dataset.idx); }
+    else if (act === 'study-practice') { togglePractice(+el.dataset.idx); }
+    else if (act === 'study-fav') {
+      const d = getDailyDialogues()[+el.dataset.idx];
+      toggleFav(d.poolIdx); saveStore(); renderStudyTasks();
+    }
     else if (act === 'del-diary') {
       diaryEntries.splice(+el.dataset.i, 1); saveStore(); renderDiary(); toast('已删除');
     }

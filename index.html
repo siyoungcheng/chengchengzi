@@ -4,13 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>橙橙子工作台</title>
-<!-- iOS 全屏 PWA 配置：添加到主屏幕后像原生 App 一样 -->
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="橙橙子" />
 <meta name="theme-color" content="#d97a1c" />
-<!-- 苹果触摸图标（多尺寸 PNG）：保存到桌面时显示橘子图标 -->
 <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
@@ -35,1618 +33,665 @@
     --tag-blue-bg: #e0eaf5; --tag-blue-text: #3a5a8a;
     --tag-purple-bg: #efe3f3; --tag-purple-text: #7a3a8a;
     --shadow-card: 0 2px 8px rgba(0,0,0,0.04);
-    --shadow-hover: 0 6px 16px rgba(0,0,0,0.08);
-    /* iPhone 16 Pro 逻辑尺寸 402×874pt */
-    --phone-w: 402px;
-    --phone-h: 874px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-    background: #0d0d0f;
-    color: var(--text-primary);
-    min-height: 100vh;
-    display: flex; justify-content: center; align-items: center;
-    padding: 10px;
+    background: var(--bg-page); color: var(--text-primary); min-height: 100vh;
+    display: flex; justify-content: center;
   }
-  /* 小屏自适应：手机访问时撑满全屏，像原生 App */
-  @media (max-width: 440px) {
-    body { padding: 0; background: var(--bg-page); }
-    .phone-frame {
-      width: 100vw !important; height: 100vh !important; height: 100dvh !important;
-      border-radius: 0 !important; box-shadow: none !important;
-      /* 安全区适配：顶部给刘海/灵动岛留位，底部给 Home Indicator 留位 */
-      padding-top: env(safe-area-inset-top);
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-    .dynamic-island { display: none; }
-    /* 状态栏在 PWA 全屏下不需要，但保留占位让内容不顶到刘海 */
-    .status-bar {
-      display: flex !important;
-      background: var(--bg-page);
-      height: env(safe-area-inset-top, 50px);
-      min-height: 44px;
-      padding-top: 0 !important;
-    }
-    /* 侧边栏顶部也留出安全区 */
-    .sidebar { padding-top: env(safe-area-inset-top, 6px); padding-bottom: env(safe-area-inset-bottom, 6px); }
-    /* 底部内容留出 Home Indicator 空间 */
-    .main-content { padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
-    /* Toast 上移，避开 Home Indicator */
-    .toast { bottom: calc(40px + env(safe-area-inset-bottom)); }
-  }
-
-  .phone-frame {
-    width: var(--phone-w); height: var(--phone-h);
-    background: var(--bg-page);
-    border-radius: 44px; overflow: hidden; position: relative;
-    box-shadow: 0 24px 70px rgba(0,0,0,0.6);
+  .app-container {
+    width: 100%; max-width: 480px; min-height: 100vh; min-height: 100dvh;
     display: flex; flex-direction: column;
+    padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom);
   }
-  .status-bar {
-    height: 50px; display: flex; justify-content: space-between; align-items: center;
-    padding: 0 32px; font-size: 15px; font-weight: 600; color: var(--text-primary); flex-shrink: 0;
-    padding-top: 8px;
+  @media (min-width: 481px) {
+    body { padding: 16px 0; }
+    .app-container { border-radius: 20px; overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.12); min-height: auto; max-height: 880px; }
   }
-  .status-bar .right { display: flex; align-items: center; gap: 6px; }
-  .status-bar svg { width: 18px; height: 18px; }
-  .dynamic-island {
-    position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
-    width: 126px; height: 36px; background: #000; border-radius: 20px; z-index: 10;
-  }
-
-  .app-container { flex: 1; display: flex; overflow: hidden; min-height: 0; }
-
-  /* 左侧导航 */
+  .top-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; flex-shrink: 0; }
+  .top-bar-logo { font-size: 22px; }
+  .top-bar-title { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+  .top-bar-sub { font-size: 11px; color: var(--text-muted); margin-left: auto; }
+  .main-body { flex: 1; display: flex; overflow: hidden; min-height: 0; }
   .sidebar {
-    width: 86px; background: var(--bg-page); padding: 6px 6px;
+    width: 76px; background: var(--bg-page); padding: 4px 6px;
     display: flex; flex-direction: column; gap: 4px; overflow-y: auto; flex-shrink: 0;
   }
   .sidebar::-webkit-scrollbar { width: 0; }
-  .sidebar-item {
-    display: flex; flex-direction: column; align-items: center;
-    padding: 8px 4px; border-radius: 14px; cursor: pointer; transition: all 0.2s;
-    text-align: center; user-select: none;
-  }
+  .sidebar-item { display: flex; flex-direction: column; align-items: center; padding: 8px 4px; border-radius: 14px; cursor: pointer; text-align: center; user-select: none; }
   .sidebar-item.active { background: var(--primary); color: #fff; }
-  .sidebar-item:not(.active):hover { background: rgba(217,122,28,0.10); }
-  .sidebar-icon {
-    width: 36px; height: 36px; border-radius: 10px;
-    background: var(--primary); color: #fff;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; margin-bottom: 3px; font-weight: 700;
-  }
-  .sidebar-item:not(.active) .sidebar-icon { background: transparent; color: var(--text-primary); font-size: 24px; font-weight: 500; }
+  .sidebar-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 3px; }
+  .sidebar-item:not(.active) .sidebar-icon { background: transparent; }
   .sidebar-item.active .sidebar-icon { background: rgba(255,255,255,0.18); }
-  /* 🍊 图标：奶油白底，激活时橙色描边 */
-  .sidebar-item.profile-active .sidebar-icon { background: #FFE0B2; border: 2px solid var(--primary); }
+  .sidebar-item.profile .sidebar-icon { background: #FFF4E6; }
   .sidebar-label { font-size: 10px; font-weight: 500; }
   .sidebar-item:not(.active) .sidebar-label { color: var(--text-secondary); }
-
-  /* 主内容 */
-  .main-content { flex: 1; overflow-y: auto; padding: 0 12px 24px 4px; scrollbar-width: thin; position: relative; -webkit-overflow-scrolling: touch; }
+  .main-content { flex: 1; overflow-y: auto; padding: 0 10px calc(20px + env(safe-area-inset-bottom)) 4px; scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
   .main-content::-webkit-scrollbar { width: 3px; }
   .main-content::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 2px; }
-  .view { display: none; animation: fadeIn 0.25s ease; }
+  .view { display: none; }
   .view.active { display: block; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-
-  .header-card {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-    color: #fff; padding: 14px 16px; border-radius: 16px; margin-bottom: 12px; position: relative;
-  }
-  .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
-  .header-title { font-size: 18px; font-weight: 700; }
+  .header-card { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: #fff; padding: 14px 16px; border-radius: 16px; margin-bottom: 10px; }
+  .header-title { font-size: 17px; font-weight: 700; }
   .header-date { font-size: 11px; opacity: 0.85; margin-top: 2px; }
-  .reset-btn {
-    background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: #fff;
-    padding: 4px 10px; border-radius: 12px; font-size: 11px; cursor: pointer; font-weight: 500;
-  }
-  .progress-row { display: flex; align-items: center; gap: 8px; font-size: 11px; margin-top: 8px; }
-  .progress-bar { flex: 1; height: 4px; background: rgba(255,255,255,0.25); border-radius: 2px; overflow: hidden; }
-  .progress-fill { height: 100%; background: #fff; width: 0%; border-radius: 2px; transition: width 0.4s ease; }
-
-  .energy-card {
-    background: #fff; border-radius: 14px; padding: 12px 14px; margin-bottom: 12px;
-    box-shadow: var(--shadow-card); display: flex; align-items: center; gap: 10px;
-    border-left: 3px solid var(--primary);
-  }
-  .energy-emoji { font-size: 22px; flex-shrink: 0; }
-  .energy-text { flex: 1; font-size: 13px; line-height: 1.5; color: var(--text-primary); font-weight: 500; }
-  .energy-change {
-    background: var(--tag-orange-bg); color: var(--tag-orange-text); border: none;
-    padding: 4px 8px; border-radius: 10px; font-size: 10px; cursor: pointer; font-weight: 600; flex-shrink: 0;
-  }
-
-  .section-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 4px; margin-bottom: 10px; }
+  .section-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 4px; margin-bottom: 8px; }
   .section-title { font-size: 14px; font-weight: 700; color: var(--text-primary); }
   .section-subtitle { font-size: 11px; color: var(--text-muted); margin-left: 6px; font-weight: 400; }
-  .refresh-btn {
-    background: #fff; border: 1px solid var(--border); color: var(--text-secondary);
-    padding: 4px 10px; border-radius: 12px; font-size: 11px; cursor: pointer;
-    display: flex; align-items: center; gap: 4px;
-  }
-
-  .note-card, .content-card {
-    background: var(--bg-card); border-radius: 14px; padding: 14px; margin-bottom: 12px;
-    box-shadow: var(--shadow-card); transition: transform 0.15s, box-shadow 0.15s;
-  }
-  .note-card.clickable, .content-card.clickable { cursor: pointer; }
-  .note-card.clickable:hover, .content-card.clickable:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
-  .note-card-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
-  .note-index {
-    width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: #fff;
-    display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0;
-  }
-  .note-title { font-size: 14px; font-weight: 600; line-height: 1.4; color: var(--text-primary); flex: 1; }
-  .note-tags { display: flex; gap: 6px; margin: 8px 0 10px 34px; flex-wrap: wrap; }
-  .tag { font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 500; }
+  .refresh-btn { background: #fff; border: 1px solid var(--border); color: var(--text-secondary); padding: 4px 10px; border-radius: 12px; font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+  .content-card { background: var(--bg-card); border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; box-shadow: var(--shadow-card); }
+  .card-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .card-body { font-size: 12px; line-height: 1.7; color: var(--text-secondary); }
+  .card-body p { margin-bottom: 4px; }
+  .card-body strong { color: var(--text-primary); font-weight: 600; }
+  .card-body .hl { color: var(--primary); font-weight: 600; }
+  .tag { font-size: 10px; padding: 2px 7px; border-radius: 5px; font-weight: 500; display: inline-block; }
   .tag-red { background: var(--tag-red-bg); color: var(--tag-red-text); }
   .tag-green { background: var(--tag-green-bg); color: var(--tag-green-text); }
   .tag-yellow { background: var(--tag-yellow-bg); color: var(--tag-yellow-text); }
   .tag-orange { background: var(--tag-orange-bg); color: var(--tag-orange-text); }
   .tag-blue { background: var(--tag-blue-bg); color: var(--tag-blue-text); }
   .tag-purple { background: var(--tag-purple-bg); color: var(--tag-purple-text); }
-  .note-stats { display: flex; gap: 14px; margin: 0 0 10px 34px; font-size: 12px; color: var(--text-secondary); }
-  .note-analysis { background: #faf8f3; border-radius: 10px; padding: 10px 12px; margin-left: 34px; margin-bottom: 10px; }
-  .analysis-row { display: flex; gap: 8px; margin-bottom: 6px; font-size: 12px; line-height: 1.5; }
-  .analysis-row:last-child { margin-bottom: 0; }
-  .analysis-label { flex-shrink: 0; font-weight: 600; padding: 2px 6px; border-radius: 4px; font-size: 10px; align-self: flex-start; margin-top: 1px; }
-  .label-fire { background: var(--tag-red-bg); color: var(--tag-red-text); }
-  .label-borrow { background: var(--tag-green-bg); color: var(--tag-green-text); }
-  .analysis-text { color: var(--text-secondary); flex: 1; }
-  .note-actions { display: flex; gap: 8px; margin-left: 34px; }
-  .note-actions.tight { margin-left: 0; margin-top: 8px; }
-  .btn {
-    flex: 1; padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 500;
-    cursor: pointer; border: none; transition: all 0.15s; font-family: inherit;
-  }
+  .tag-row { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+  .btn { padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 500; cursor: pointer; border: none; font-family: inherit; }
   .btn-outline { background: #fff; color: var(--text-secondary); border: 1px solid var(--border); }
   .btn-primary { background: var(--primary); color: #fff; }
-  .btn-primary:hover { background: var(--primary-dark); }
-  .btn.joined { background: var(--tag-green-bg); color: var(--tag-green-text); border-color: transparent; }
-  .link-arrow { color: var(--primary); font-size: 11px; font-weight: 600; margin-left: auto; }
-
-  /* 任务清单 */
-  .task-input-row { display: flex; gap: 8px; margin-bottom: 12px; }
-  .task-input, .diary-input, .sport-input, .link-edit-input {
-    border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px;
-    font-size: 13px; background: #fff; color: var(--text-primary); outline: none; font-family: inherit;
-  }
-  .task-input:focus, .diary-input:focus, .sport-input:focus, .link-edit-input:focus { border-color: var(--primary); }
-  .task-add-btn {
-    background: var(--primary); color: #fff; border: none; border-radius: 10px;
-    padding: 0 14px; font-size: 13px; font-weight: 600; cursor: pointer;
-  }
-  .task-list { list-style: none; }
-  .task-item {
-    display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 12px;
-    padding: 12px 14px; margin-bottom: 8px; box-shadow: var(--shadow-card); cursor: pointer; transition: background 0.2s;
-  }
-  .task-item:hover { background: #faf8f3; }
-  .task-checkbox {
-    width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--border);
-    flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; transition: all 0.2s;
-  }
-  .task-item.done .task-checkbox { background: var(--primary); border-color: var(--primary); }
-  .task-text { flex: 1; font-size: 13px; color: var(--text-primary); line-height: 1.4; }
-  .task-item.done .task-text { text-decoration: line-through; color: var(--text-muted); }
-  .task-delete {
-    color: var(--text-muted); font-size: 18px; width: 24px; height: 24px; border-radius: 6px;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  }
-  .task-delete:hover { background: var(--tag-red-bg); color: var(--tag-red-text); }
-
-  /* 日期分组折叠 */
-  .date-group { margin-bottom: 14px; }
-  .date-group-head {
-    display: flex; align-items: center; gap: 8px; padding: 8px 6px; cursor: pointer; user-select: none;
-  }
-  .date-group-arrow { font-size: 12px; color: var(--text-secondary); transition: transform 0.2s; width: 14px; }
-  .date-group.collapsed .date-group-arrow { transform: rotate(-90deg); }
-  .date-group-title { font-size: 13px; font-weight: 700; color: var(--text-primary); }
-  .date-group-summary { font-size: 11px; color: var(--text-muted); margin-left: auto; }
-  .date-group-body { display: block; }
-  .date-group.collapsed .date-group-body { display: none; }
-  .date-group-today .date-group-title { color: var(--primary); }
-  .date-group-archive .date-group-title { color: var(--text-secondary); }
-
-  .content-card-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; color: var(--text-primary); }
-  .content-card-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 10px; }
-  .content-card-meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-
-  /* 英语学习：每日对话 */
-  .study-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
-  .study-stat-card { background: #fff; border-radius: 10px; padding: 8px 4px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
-  .study-stat-num { font-size: 18px; font-weight: 700; color: var(--primary); }
-  .study-stat-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
-  .study-date-bar { display: flex; justify-content: space-between; align-items: center; margin: 10px 0 8px; }
-  .study-date-bar .btn { padding: 5px 10px; font-size: 12px; background: #fff; color: var(--text-secondary); }
-  .study-date-label { font-size: 13px; font-weight: 600; color: var(--text-primary); }
-  .study-tools-bar { display: flex; gap: 8px; margin-bottom: 10px; }
-  .study-tool-btn { padding: 5px 10px; font-size: 12px; background: #fff; color: var(--text-secondary); border: 1px solid var(--border); }
-  .study-tool-btn.active { background: var(--tag-green-bg); color: var(--tag-green-text); border-color: #c5d9a8; }
-  .study-categories { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 6px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-  .study-categories::-webkit-scrollbar { display: none; }
-  .study-cat-chip { flex: none; padding: 5px 10px; border-radius: 16px; background: #fff; border: 1px solid var(--border); font-size: 12px; color: var(--text-secondary); cursor: pointer; white-space: nowrap; }
-  .study-cat-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-  .study-dialogue-card { background: #fff; border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; box-shadow: var(--shadow-card); }
-  .study-dialogue-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .study-dialogue-meta { display: flex; align-items: center; gap: 6px; }
-  .study-dialogue-idx { font-size: 11px; color: var(--text-muted); }
-  .study-dialogue-level { color: #f0a04b; font-size: 11px; letter-spacing: -1px; }
-  .study-dialogue-body { line-height: 1.7; font-size: 14px; color: var(--text-primary); }
-  .study-dialogue-line { margin: 4px 0; }
-  .study-dialogue-zh { font-size: 12px; color: var(--text-secondary); margin-top: 8px; padding: 8px; background: #f9f7f2; border-radius: 8px; line-height: 1.6; }
-  .study-dialogue-actions { display: flex; gap: 8px; margin-top: 10px; }
-  .study-dialogue-actions .btn { padding: 5px 10px; font-size: 12px; }
-  .study-dialogue-actions .btn-done { background: #e6f0db; color: #4a6b3a; border: 1px solid #c5d9a8; }
-  .study-dialogue-actions .btn-done.active { background: var(--tag-green-bg); color: var(--tag-green-text); }
-  .study-dialogue-actions .btn-fav { background: #fff8e1; color: #b8881f; border: 1px solid #f0d68a; }
-  .study-dialogue-actions .btn-fav.active { background: #fff3d6; }
-  .link-edit-row { display: none; flex-direction: column; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
-  .link-edit-row.show { display: flex; }
-  .link-edit-input { width: 100%; }
-  .link-edit-actions { display: flex; gap: 6px; }
-  .link-edit-actions button { flex: 1; padding: 5px; border-radius: 8px; border: none; font-size: 11px; cursor: pointer; font-weight: 600; }
-  .btn-save { background: var(--primary); color: #fff; }
-  .btn-cancel { background: #f0ece2; color: var(--text-secondary); }
-  .edit-link-btn { background: transparent; border: none; color: var(--text-muted); font-size: 11px; cursor: pointer; padding: 2px 6px; }
-  .edit-link-btn:hover { color: var(--primary); }
-  .link-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: var(--tag-green-bg); color: var(--tag-green-text); font-weight: 600; }
-  .link-badge.empty { background: #f0ece2; color: var(--text-muted); }
-
-  /* 碎碎念 */
-  .diary-input { width: 100%; resize: none; min-height: 70px; line-height: 1.6; margin-bottom: 8px; }
-  .diary-post-row { display: flex; justify-content: flex-end; margin-bottom: 14px; }
-  .diary-entry { background: #fff; border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; box-shadow: var(--shadow-card); }
-  .diary-entry-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-  .diary-time { font-size: 11px; color: var(--text-muted); }
-  .diary-mood { font-size: 16px; }
-  .diary-text { font-size: 13px; line-height: 1.6; color: var(--text-primary); white-space: pre-wrap; word-break: break-word; }
-  .mood-picker { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
-  .mood-chip { font-size: 18px; padding: 4px 8px; border-radius: 8px; cursor: pointer; background: #fff; border: 1px solid var(--border); }
-  .mood-chip.selected { background: var(--tag-orange-bg); border-color: var(--primary); }
-
-  /* 运动 */
-  .sport-input-row { display: flex; gap: 8px; margin-bottom: 12px; }
-  .sport-input { flex: 1; }
-  .sport-min { width: 70px; }
-  .sport-entry { background: #fff; border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; box-shadow: var(--shadow-card); display: flex; align-items: center; gap: 10px; }
-  .sport-icon { font-size: 22px; }
-  .sport-info { flex: 1; }
-  .sport-name { font-size: 13px; font-weight: 600; }
-  .sport-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-  .sport-kcal { font-size: 12px; color: var(--primary); font-weight: 600; }
-
-  .toast {
-    position: absolute; left: 50%; bottom: 40px; transform: translateX(-50%) translateY(20px);
-    background: rgba(0,0,0,0.82); color: #fff; padding: 8px 16px; border-radius: 20px;
-    font-size: 12px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 60; white-space: nowrap; max-width: 80%;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .bottom-tip { text-align: center; padding: 16px 0 8px; color: var(--text-muted); font-size: 11px; }
-  .empty-hint { text-align: center; color: var(--text-muted); font-size: 12px; padding: 30px 0; }
-
-  .floating-tip {
-    position: absolute; left: 50%; transform: translateX(-50%);
-    font-size: 22px; font-weight: 900; color: #fff;
-    text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 -2px 0 #000, 0 2px 0 #000, -2px 0 0 #000, 2px 0 0 #000;
-    letter-spacing: 2px; pointer-events: none; z-index: 50;
-    animation: floatUp 1.4s ease-out forwards; white-space: nowrap;
-  }
-  @keyframes floatUp {
-    0% { opacity: 0; transform: translate(-50%, 20px) scale(0.9); }
-    20% { opacity: 1; transform: translate(-50%, 0) scale(1.05); }
-    80% { opacity: 1; transform: translate(-50%, -10px) scale(1); }
-    100% { opacity: 0; transform: translate(-50%, -40px) scale(1); }
-  }
+  .topic-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .topic-table th { text-align: left; font-size: 10px; color: var(--text-muted); padding: 6px 4px; border-bottom: 1px solid var(--border); font-weight: 600; }
+  .topic-table td { padding: 8px 4px; border-bottom: 1px solid #f5f2ec; vertical-align: top; }
+  .topic-table tr:last-child td { border-bottom: none; }
+  .topic-title-cell { font-weight: 600; color: var(--text-primary); line-height: 1.4; }
+  .topic-summary-cell { color: var(--text-secondary); font-size: 11px; line-height: 1.4; }
+  .status-chip { font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+  .status-pending { background: var(--tag-yellow-bg); color: var(--tag-yellow-text); }
+  .status-done { background: var(--tag-green-bg); color: var(--tag-green-text); }
+  .filter-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 6px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .filter-chip { flex: none; padding: 4px 10px; border-radius: 14px; background: #fff; border: 1px solid var(--border); font-size: 11px; color: var(--text-secondary); cursor: pointer; white-space: nowrap; }
+  .filter-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .note-input { width: 100%; border: 1px dashed var(--border); border-radius: 8px; padding: 6px 8px; font-size: 11px; background: #faf8f3; color: var(--text-primary); outline: none; font-family: inherit; resize: none; min-height: 32px; line-height: 1.5; margin-top: 6px; }
+  .note-input:focus { border-color: var(--primary); border-style: solid; }
+  .note-label { font-size: 10px; color: var(--text-muted); margin-top: 8px; margin-bottom: 2px; font-weight: 600; }
+  .review-dim { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; }
+  .review-dim-label { flex-shrink: 0; font-size: 11px; font-weight: 700; color: var(--primary); width: 64px; padding-top: 1px; }
+  .review-dim-content { flex: 1; font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+  .outfit-card { display: flex; gap: 10px; }
+  .outfit-thumb { width: 56px; height: 56px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
+  .outfit-info { flex: 1; }
+  .outfit-name { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+  .outfit-desc { font-size: 11px; color: var(--text-secondary); line-height: 1.5; }
+  .health-item { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 6px; }
+  .health-bullet { color: var(--primary); font-weight: 700; flex-shrink: 0; }
+  .health-text { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+  .bottom-tip { text-align: center; font-size: 11px; color: var(--text-muted); padding: 12px 0 4px; }
+  .toast { position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.78); color: #fff; padding: 8px 18px; border-radius: 20px; font-size: 13px; z-index: 9999; pointer-events: none; opacity: 0; transition: opacity 0.2s; white-space: nowrap; }
+  .toast.show { opacity: 1; }
+  @media (max-width: 440px) { .toast { bottom: calc(40px + env(safe-area-inset-bottom)); } }
+  .speak-btn { background: #fff3d6; color: #b8881f; border: 1px solid #f0d68a; padding: 3px 8px; border-radius: 8px; font-size: 11px; cursor: pointer; }
+  .word-item { padding: 6px 0; border-bottom: 1px solid #f5f2ec; }
+  .word-item:last-child { border-bottom: none; }
+  .word-en { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .word-zh { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .word-ex { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-style: italic; }
 </style>
 </head>
 <body>
-
-<div class="phone-frame">
-  <div class="dynamic-island"></div>
-
-  <div class="status-bar">
-    <span id="clock">23:17</span>
-    <div class="right">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 22h20V2L2 22z"/></svg>
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4zM13 18h-2v-2h2v2zm0-4h-2V8h2v6z"/></svg>
-    </div>
+<div class="app-container">
+  <div class="top-bar">
+    <span class="top-bar-logo">🍊</span>
+    <span class="top-bar-title">橙橙子工作台</span>
+    <span class="top-bar-sub" id="topDate"></span>
   </div>
-
-  <div class="app-container">
+  <div class="main-body">
     <div class="sidebar">
-      <div class="sidebar-item" data-view="profile"><div class="sidebar-icon" style="background:#FFF4E6;">🍊</div></div>
-      <div class="sidebar-item active" data-view="plan"><div class="sidebar-icon">📅</div><div class="sidebar-label">每日计划</div></div>
-      <div class="sidebar-item" data-view="inspire"><div class="sidebar-icon">💡</div><div class="sidebar-label">选题灵感</div></div>
-      <div class="sidebar-item" data-view="hot"><div class="sidebar-icon">🔥</div><div class="sidebar-label">热点二创</div></div>
-      <div class="sidebar-item" data-view="review"><div class="sidebar-icon">📊</div><div class="sidebar-label">内容复盘</div></div>
-      <div class="sidebar-item" data-view="study"><div class="sidebar-icon">🎓</div><div class="sidebar-label">英语学习</div></div>
-      <div class="sidebar-item" data-view="diary"><div class="sidebar-icon">✏️</div><div class="sidebar-label">碎碎念</div></div>
-      <div class="sidebar-item" data-view="sport"><div class="sidebar-icon">🏃</div><div class="sidebar-label">运动</div></div>
+      <div class="sidebar-item profile"><div class="sidebar-icon">🍊</div></div>
+      <div class="sidebar-item active" data-view="study"><div class="sidebar-icon">🎓</div><div class="sidebar-label">英语学习</div></div>
+      <div class="sidebar-item" data-view="media"><div class="sidebar-icon">🎬</div><div class="sidebar-label">自媒体</div></div>
+      <div class="sidebar-item" data-view="beauty"><div class="sidebar-icon">👗</div><div class="sidebar-label">穿搭美妆</div></div>
+      <div class="sidebar-item" data-view="health"><div class="sidebar-icon">🏥</div><div class="sidebar-label">健康记录</div></div>
     </div>
-
     <div class="main-content">
 
-      <!-- 选题灵感 -->
-      <div class="view" id="view-inspire">
-        <div class="energy-card">
-          <div class="energy-emoji" id="energyEmoji">☀️</div>
-          <div class="energy-text" id="energyText">今天也是闪闪发光的一天！</div>
-          <button class="energy-change" onclick="nextEnergy()">换一条</button>
+      <!-- ===== 板块1：英语学习 ===== -->
+      <div class="view active" id="view-study">
+        <div class="header-card">
+          <div class="header-title">🎓 英语学习</div>
+          <div class="header-date">新概念 · 商务外贸 · 语法 · 生词素材聚合</div>
         </div>
         <div class="section-header">
-          <div><span class="section-title">赛道爆款拆解</span><span class="section-subtitle">· 英语/跟读/女性成长</span></div>
-          <button class="refresh-btn" onclick="refreshInspire()"><span id="refreshIcon">↻</span><span>刷新</span></button>
+          <div><span class="section-title">新概念2核心要点</span><span class="section-subtitle">课文 · 语法 · 复述</span></div>
+          <button class="refresh-btn" data-act="refresh" data-target="nce">↻ 刷新</button>
         </div>
-        <div id="noteList"></div>
-        <div class="bottom-tip">— 点击「直达作品」打开真实爆款 —</div>
+        <div id="nceList"></div>
+
+        <div class="section-header">
+          <div><span class="section-title">外贸商务英语</span><span class="section-subtitle">高频句式 · 场景对话</span></div>
+          <button class="refresh-btn" data-act="refresh" data-target="biz">↻ 刷新</button>
+        </div>
+        <div id="bizList"></div>
+
+        <div class="section-header">
+          <div><span class="section-title">高频语法错题库</span><span class="section-subtitle">易错点归纳</span></div>
+          <button class="refresh-btn" data-act="refresh" data-target="grammar">↻ 刷新</button>
+        </div>
+        <div id="grammarList"></div>
+
+        <div class="section-header">
+          <div><span class="section-title">生词短语素材</span><span class="section-subtitle">高频词条</span></div>
+          <button class="refresh-btn" data-act="refresh" data-target="vocab">↻ 刷新</button>
+        </div>
+        <div id="vocabList"></div>
+        <div class="content-card">
+          <div class="note-label">📝 个人重点批注</div>
+          <textarea class="note-input" id="studyNote" placeholder="标记本板块学习重点，自动保存…" rows="2"></textarea>
+        </div>
+        <div class="bottom-tip">— 聚合学习素材，拿来即用 —</div>
       </div>
 
-      <!-- 每日计划 -->
-      <div class="view active" id="view-plan">
+      <!-- ===== 板块2：自媒体创作 ===== -->
+      <div class="view" id="view-media">
         <div class="header-card">
-          <div class="header-top">
-            <div>
-              <div class="header-title">橙橙子工作台</div>
-              <div class="header-date" id="todayDate"></div>
-            </div>
-            <button class="reset-btn" onclick="resetToday()">重置今日</button>
-          </div>
-          <div class="progress-row">
-            <span id="taskDoneText">0 / 0 完成</span>
-            <div class="progress-bar"><div class="progress-fill" id="taskProgressFill" style="background:#fff;"></div></div>
-          </div>
-        </div>
-        <div class="energy-card">
-          <div class="energy-emoji">🌱</div>
-          <div class="energy-text" id="planEnergy">坚持的复利，比天赋更可怕。</div>
-          <button class="energy-change" onclick="nextEnergy()">换一条</button>
-        </div>
-        <div class="task-input-row">
-          <input type="text" class="task-input" id="taskInput" placeholder="添加一条今日任务…" />
-          <button class="task-add-btn" onclick="addTask()">+ 添加</button>
-        </div>
-        <div id="taskGroups"></div>
-      </div>
-
-      <!-- 热点二创 -->
-      <div class="view" id="view-hot">
-        <div class="header-card">
-          <div class="header-top"><div><div class="header-title">热点二创</div><div class="header-date">点击卡片直达真实作品</div></div></div>
+          <div class="header-title">🎬 自媒体创作</div>
+          <div class="header-date">选题 · 脚本 · 热点 · 复盘参考</div>
         </div>
         <div class="section-header">
-          <div><span class="section-title">今日热榜</span><span class="section-subtitle">· 点击直达</span></div>
-          <button class="refresh-btn" onclick="refreshHot()"><span id="hotIcon">↻</span><span>刷新</span></button>
+          <div><span class="section-title">选题素材库</span><span class="section-subtitle">AI 填充 · 可筛选</span></div>
+          <button class="refresh-btn" data-act="refresh" data-target="topics">↻ 刷新</button>
         </div>
-        <div id="hotList"></div>
-        <div class="bottom-tip">— 点击卡片直达真实作品 —</div>
-      </div>
+        <div class="filter-row" id="topicFilters"></div>
+        <div id="topicTable"></div>
 
-      <!-- 内容复盘 -->
-      <div class="view" id="view-review">
-        <div class="header-card">
-          <div class="header-top"><div><div class="header-title">内容复盘</div><div class="header-date">点击作品进入详情，可编辑链接</div></div></div>
+        <div class="section-header">
+          <div><span class="section-title">脚本范例库</span><span class="section-subtitle">完整模板</span></div>
+          <button class="refresh-btn" data-act="refresh" data-target="scripts">↻ 刷新</button>
         </div>
-        <div class="section-header"><div><span class="section-title">近 7 天作品</span><span class="section-subtitle">· 自动同步</span></div></div>
+        <div id="scriptList"></div>
+
+        <div class="section-header">
+          <div><span class="section-title">热点追踪简报</span><span class="section-subtitle">方向 · 分析</span></div>
+          <button class="refresh-btn" data-act="refresh" data-target="hotspots">↻ 刷新</button>
+        </div>
+        <div id="hotspotList"></div>
+
+        <div class="section-header">
+          <div><span class="section-title">作品复盘参考</span><span class="section-subtitle">维度 · 案例</span></div>
+        </div>
         <div id="reviewList"></div>
-        <div class="bottom-tip">— 点「编辑链接」绑定你的作品链接 —</div>
+        <div class="content-card">
+          <div class="note-label">📝 个人复盘批注</div>
+          <textarea class="note-input" id="mediaNote" placeholder="记录个人观察，自动保存…" rows="2"></textarea>
+        </div>
+        <div class="bottom-tip">— 现成素材，直接参考 —</div>
       </div>
 
-      <!-- 英语学习：英语口语 · 每日对话 -->
-      <div class="view" id="view-study">
+      <!-- ===== 板块3：美妆穿搭｜电子衣橱 ===== -->
+      <div class="view" id="view-beauty">
         <div class="header-card">
-          <div class="header-top"><div><div class="header-title">🗣️ 英语口语 · 每日对话</div><div class="header-date">生活场景 · 每天练几句</div></div></div>
-          <div class="study-stats-row">
-            <div class="study-stat-card"><div class="study-stat-num" id="statToday">0/0</div><div class="study-stat-label">今日已练</div></div>
-            <div class="study-stat-card"><div class="study-stat-num" id="statTotal">0</div><div class="study-stat-label">累计练习</div></div>
-            <div class="study-stat-card"><div class="study-stat-num" id="statFav">0</div><div class="study-stat-label">收藏对话</div></div>
-            <div class="study-stat-card"><div class="study-stat-num" id="statStreak">0</div><div class="study-stat-label">连续天数</div></div>
-          </div>
+          <div class="header-title">👗 美妆穿搭 · 电子衣橱</div>
+          <div class="header-date">大方脸妆容 · 四季配色 · 穿搭方案</div>
         </div>
-
-        <div class="study-date-bar">
-          <button class="btn" data-act="study-prev-day">‹ 上一天</button>
-          <span class="study-date-label" id="studyDateLabel">今天</span>
-          <button class="btn" data-act="study-next-day">下一天 ›</button>
+        <div class="section-header">
+          <div><span class="section-title">穿搭灵感素材</span><span class="section-subtitle">配色 · 方案</span></div>
+          <button class="refresh-btn" data-act="refresh" data-target="outfits">↻ 刷新</button>
         </div>
+        <div id="outfitList"></div>
 
-        <div class="study-tools-bar">
-          <button class="btn study-tool-btn active" id="studyZhToggle" data-act="study-toggle-zh">中文翻译 开</button>
-          <button class="btn study-tool-btn" data-act="study-mark-all">全部标记已练</button>
+        <div class="section-header">
+          <div><span class="section-title">妆容参考合集</span><span class="section-subtitle">大方脸适配</span></div>
+          <button class="refresh-btn" data-act="refresh" data-target="makeups">↻ 刷新</button>
         </div>
+        <div id="makeupList"></div>
 
-        <div class="study-categories" id="studyCategories"></div>
-
-        <div id="studyDialogueList"></div>
-        <div class="empty-hint" id="studyEmpty" style="display:none;">该分类下没有对话～</div>
-        <div class="bottom-tip" style="margin-top:16px;">— 每天几句，开口就不一样 —</div>
+        <div class="section-header">
+          <div><span class="section-title">衣橱方案卡片</span><span class="section-subtitle">搭配逻辑参考</span></div>
+        </div>
+        <div id="wardrobeList"></div>
+        <div class="content-card">
+          <div class="note-label">📝 标记喜欢的搭配</div>
+          <textarea class="note-input" id="beautyNote" placeholder="记录喜欢的搭配思路，自动保存…" rows="2"></textarea>
+        </div>
+        <div class="bottom-tip">— 配色穿搭，一键参考 —</div>
       </div>
 
-      <!-- 碎碎念 -->
-      <div class="view" id="view-diary">
-        <div class="header-card"><div class="header-top"><div><div class="header-title">碎碎念</div><div class="header-date">记录每一个小情绪</div></div></div></div>
-        <div class="energy-card"><div class="energy-emoji">💭</div><div class="energy-text">写下来，就是给情绪一个出口。</div></div>
-        <div class="mood-picker" id="moodPicker">
-          <span class="mood-chip selected" data-mood="😊">😊</span>
-          <span class="mood-chip" data-mood="😎">😎</span>
-          <span class="mood-chip" data-mood="🥰">🥰</span>
-          <span class="mood-chip" data-mood="😴">😴</span>
-          <span class="mood-chip" data-mood="😤">😤</span>
-          <span class="mood-chip" data-mood="😭">😭</span>
-        </div>
-        <textarea class="diary-input" id="diaryInput" placeholder="今天发生了什么，心情怎么样…"></textarea>
-        <div class="diary-post-row"><button class="btn btn-primary" style="flex:none;padding:8px 20px;" onclick="postDiary()">发布</button></div>
-        <div id="diaryList"></div>
-        <div class="empty-hint" id="diaryEmpty" style="display:none;">还没有记录，写下第一条吧～</div>
-      </div>
-
-      <!-- 运动 -->
-      <div class="view" id="view-sport">
+      <!-- ===== 板块4：健康记录 ===== -->
+      <div class="view" id="view-health">
         <div class="header-card">
-          <div class="header-top"><div><div class="header-title">运动</div><div class="header-date">身体是革命的本钱</div></div></div>
-          <div class="progress-row">
-            <span id="sportStat">今日 0 分钟 · 0 千卡</span>
-            <div class="progress-bar"><div class="progress-fill" id="sportProgressFill" style="background:#fff;"></div></div>
-          </div>
+          <div class="header-title">🏥 健康记录</div>
+          <div class="header-date">休养要点 · 复查提醒 · 身体观察</div>
         </div>
-        <div class="sport-input-row">
-          <input type="text" class="sport-input" id="sportName" placeholder="运动项目（如跑步）" />
-          <input type="number" class="sport-input sport-min" id="sportMin" placeholder="分钟" min="1" />
-          <button class="task-add-btn" onclick="addSport()">+</button>
+        <div class="section-header">
+          <div><span class="section-title">休养观察参考要点</span><span class="section-subtitle">现成参考条目</span></div>
+          <button class="refresh-btn" data-act="refresh" data-target="health">↻ 刷新</button>
         </div>
-        <div id="sportList"></div>
-        <div class="empty-hint" id="sportEmpty" style="display:none;">还没运动，动起来吧～</div>
+        <div id="healthList"></div>
+
+        <div class="section-header">
+          <div><span class="section-title">复查节点提醒</span><span class="section-subtitle">预置提醒逻辑</span></div>
+        </div>
+        <div id="checkupList"></div>
+
+        <div class="content-card">
+          <div class="note-label">📝 今日身体感受</div>
+          <textarea class="note-input" id="healthNote" placeholder="简短记录身体感受，自动保存…" rows="3"></textarea>
+        </div>
+        <div class="bottom-tip">— 关注身体，科学休养 —</div>
       </div>
 
     </div>
   </div>
-
-  <div class="toast" id="toast"></div>
 </div>
+<div class="toast" id="toast"></div>
 
 <script>
-  // ========== 持久化存储 ==========
-  const STORE_KEY = 'chengchengzi_workbench_v1';
-  function loadStore() {
-    try {
-      const raw = localStorage.getItem(STORE_KEY);
-      if (raw) return JSON.parse(raw);
-    } catch(e) {}
-    return null;
-  }
-  function saveStore() {
-    try {
-      localStorage.setItem(STORE_KEY, JSON.stringify({
-        tasksByDate, studyExtraByDate, studyPracticeByDate,
-        studyFavorites, studyTotalCount, studyShowZh, studyFilter, studyDateOffset,
-        diaryEntries, sportEntries,
-        reviewLinks, energyIdx, collapsedDates
-      }));
-    } catch(e) { console.warn('保存失败', e); }
-  }
+  "use strict";
+  const STORE_KEY = 'chengchengzi_v2';
+  function loadStore() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch(e) { return {}; } }
+  function saveStore() { try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch(e) {} }
+  const store = loadStore();
+  if (!store.notes) store.notes = {};
+  if (!store.topicStatus) store.topicStatus = {};
+  if (!store.topicFilter) store.topicFilter = 'all';
 
-  // ========== 日期工具 ==========
-  function todayKey() {
+  function $(id) { return document.getElementById(id); }
+  function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._timer); t._timer = setTimeout(() => t.classList.remove('show'), 2000); }
+  function shuffle(arr) { const a = [...arr]; for (let i = a.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+  function pickN(arr, n) { return shuffle(arr).slice(0, n); }
+
+  // 日期显示
+  (function() {
     const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  }
-  function dateKeyLabel(key) {
-    const [y,m,d] = key.split('-').map(Number);
-    const dt = new Date(y, m-1, d);
-    const weeks = ['周日','周一','周二','周三','周四','周五','周六'];
-    const today = todayKey();
-    if (key === today) return '今天';
-    const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
-    const yKey = `${yesterday.getFullYear()}-${String(yesterday.getMonth()+1).padStart(2,'0')}-${String(yesterday.getDate()).padStart(2,'0')}`;
-    if (key === yKey) return '昨天';
-    return `${m}月${d}日 · ${weeks[dt.getDay()]}`;
-  }
+    const weeks = ['日','一','二','三','四','五','六'];
+    $('topDate').textContent = `${d.getMonth()+1}月${d.getDate()}日 周${weeks[d.getDay()]}`;
+  })();
 
-  // ========== 状态初始化（带持久化恢复）==========
-  const saved = loadStore();
-  const englishKeywords = ['英语','听力','口语','单词','词汇','跟读','阅读','写作','翻译','语法','发音','背诵','精听','泛听','外刊','背词','豆包','墨墨','新概念','课文','复述'];
-  function isEnglishTask(text) { return englishKeywords.some(k => text.includes(k)); }
-
-  // 按日期组织的任务：{ '2026-07-26': [{text,done}], ... }
-  let tasksByDate = saved?.tasksByDate || {};
-  let studyExtraByDate = saved?.studyExtraByDate || {}; // 兼容旧数据（已弃用）
-  // 英语学习：碎片练习记录 / 每日对话记录
-  let studyPracticeByDate = saved?.studyPracticeByDate || {};
-  let studyFavorites = saved?.studyFavorites || [];
-  let studyTotalCount = saved?.studyTotalCount || 0;
-  let studyShowZh = saved?.studyShowZh !== false;
-  let studyFilter = saved?.studyFilter || 'all';
-  let studyDateOffset = saved?.studyDateOffset || 0;
-  let diaryEntries = saved?.diaryEntries || [];
-  let sportEntries = saved?.sportEntries || [];
-  let reviewLinks = saved?.reviewLinks || {}; // {title: url}
-  let energyIdx = saved?.energyIdx ?? Math.floor(Math.random() * 12);
-  let collapsedDates = saved?.collapsedDates || {}; // {dateKey: true}
-
-  // 确保今天有任务初始化
-  function ensureTodayTasks() {
-    const tk = todayKey();
-    if (!tasksByDate[tk]) {
-      tasksByDate[tk] = [
-        { text: '英语听力 60min', done: false },
-        { text: '影子跟读 60min', done: false },
-        { text: '豆包口语对话 30min', done: false },
-        { text: '墨墨背单词 50 个', done: false },
-        { text: '新概念课文复述/课题练习', done: false }
-      ];
-      saveStore();
-    }
-  }
-  ensureTodayTasks();
-
-  // ========== 正能量 ==========
-  const energyList = [
-    { e:'☀️', t:'今天也是闪闪发光的一天！' },
-    { e:'💪', t:'坚持的复利，比天赋更可怕。' },
-    { e:'🌟', t:'你只管努力，剩下的交给时间。' },
-    { e:'🔥', t:'今天的懒，是明天的难。动起来！' },
-    { e:'🌈', t:'慢慢来，比较快。别和别人比进度。' },
-    { e:'✨', t:'每一个不起眼的日子，都在悄悄塑造你。' },
-    { e:'🎯', t:'目标再大，拆到今天也就是一小时的事。' },
-    { e:'🌸', t:'温柔且有力量，清醒且在努力。' },
-    { e:'📚', t:'今天背的单词，是未来开口的底气。' },
-    { e:'🚀', t:'与其焦虑，不如行动。哪怕只做 5 分钟。' },
-    { e:'🌻', t:'你向往的生活，正在你每天的清单里。' },
-    { e:'🧗', t:'累了就歇一会儿，但别停下来。' }
+  // ========== 数据池 ==========
+  const NCE_DATA = [
+    { lesson: 'Lesson 1 A Private Conversation', focus: '一般过去时 + 简单句结构', grammar: '主语+谓语+宾语+状语。注意过去式动词变化规则，不规则动词需单独记忆。', retell: 'Last week I went to the theatre. I had a very good seat. The play was very interesting, but I did not enjoy it.' },
+    { lesson: 'Lesson 2 Breakfast or Lunch', focus: '现在进行时 vs 一般现在时', grammar: '现在进行时表当前正在发生的动作；一般现在时表习惯性动作。频率副词位置：be动词后，实义动词前。', retell: 'It was Sunday. I never get up early on Sundays. I sometimes stay in bed until lunchtime.' },
+    { lesson: 'Lesson 3 Please Send Me a Card', focus: '一般过去时 + 双宾语结构', grammar: 'send sb sth = send sth to sb。注意介词的选择取决于动词。过去时态中常与last, ago, yesterday连用。', retell: 'Postcards always spoil my holidays. Last summer, I went to Italy. I visited museums and sat in public gardens.' },
+    { lesson: 'Lesson 4 An Exciting Trip', focus: '现在完成时', grammar: 'have/has + 过去分词。表过去发生对现在有影响的动作，常配just, already, yet, ever, never。', retell: 'I have just received a letter from my brother, Tim. He is in Australia. He has been there for six months.' },
+    { lesson: 'Lesson 5 No Wrong Numbers', focus: '一般过去时 vs 过去完成时', grammar: '过去完成时(had+done)表"过去的过去"。先发生的动作用过去完成时，后发生的用一般过去时。', retell: 'Mr. James Scott has a garage in Silbury and now he has just bought another garage in Pinhurst.' },
+    { lesson: 'Lesson 6 Percy Buttons', focus: '一般过去时 + 习惯性动作', grammar: 'used to do sth 表过去常常；would do 也可表过去习惯，但不含"现在不再"之意。', retell: 'I have just moved to a house in Bridge Street. Yesterday a beggar knocked at my door. He asked me for a meal and a glass of beer.' },
+    { lesson: 'Lesson 7 Too Late', focus: '过去进行时', grammar: 'was/were + doing。表过去某时刻正在进行的动作。常配when/while引导的时间状语从句。', retell: 'The plane was late and detectives were waiting at the airport all morning. They were expecting a valuable parcel of diamonds.' },
+    { lesson: 'Lesson 8 The Best and the Worst', focus: '形容词比较级和最高级', grammar: '单音节+er/est；多音节more/most+原级。比较级前可用much, a lot, a little修饰，不可用very。', retell: 'Joe Sanders has the most beautiful garden in our town. Nearly everybody enters for "The Nicest Garden Competition" each year.' },
+    { lesson: 'Lesson 9 A Cold Welcome', focus: '时间状语从句', grammar: 'when, while, as, before, after, until引导时间状语从句。注意主将从现原则。', retell: 'On Wednesday evening, we went to the Town Hall. It was the last day of the year and a large crowd of people had gathered under the Town Hall clock.' },
+    { lesson: 'Lesson 10 Not For Jazz', focus: '被动语态', grammar: 'be + 过去分词。注意时态变化：一般现在时am/is/are done，一般过去时was/were done，现在完成时have/has been done。', retell: 'We have an old musical instrument. It is called a clavichord. It was made in Germany in 1681. Our clavichord is kept in the living room.' },
   ];
-  function renderEnergy() {
-    const cur = energyList[energyIdx];
-    document.getElementById('energyText').textContent = cur.t;
-    document.getElementById('energyEmoji').textContent = cur.e;
-    const pe = document.getElementById('planEnergy'); if (pe) pe.textContent = cur.t;
-  }
-  function nextEnergy() {
-    energyIdx = (energyIdx + 1) % energyList.length;
-    renderEnergy(); saveStore();
-  }
-  renderEnergy();
 
-  // ========== 选题灵感 ==========
-  const inspirePool = [
-    { title:'影子跟读 30 天，口语居然被夸了', tags:[['抖音','red'],['影子跟读','blue']], likes:'38.6万', saves:'21.2万', fire:'真实逆袭 + 可量化结果，代入感强', borrow:'拍「跟读前后对比」+ 附跟读素材清单', vid:'7665561402261753115' },
-    { title:'记单词别再死记硬背！3 步记忆法', tags:[['抖音','red'],['英语学习','blue']], likes:'52.1万', saves:'33.8万', fire:'方法论 + 反常识标题，刚需高频', borrow:'拆解一个词的完整记忆链路，做成系列', vid:'7664998520151894894' },
-    { title:'女孩，请把时间花在让自己增值的事上', tags:[['小红书','red'],['女性成长','purple']], likes:'142.3万', saves:'56.9万', fire:'观点冲突强、情绪共鸣、易爆', borrow:'直面镜头口播 + 自身故事切入', vid:'7122612824777542949', ptype:'note' },
-    { title:'每天 15 分钟影子跟读，30 天开口像 native', tags:[['小红书','red'],['影子跟读','blue']], likes:'27.9万', saves:'18.4万', fire:'低门槛 + 时间承诺，易跟练', borrow:'做「跟读打卡表」引导收藏', vid:'7572663102556094441' },
-    { title:'我用英语播客通勤听力，半年从听不懂到能复述', tags:[['抖音','red'],['英语学习','blue']], likes:'44.7万', saves:'29.1万', fire:'场景化 + 长期主义故事', borrow:'推荐 3 个播客 + 自己的听写方法', vid:'7666771711584712335' },
-    { title:'边学英语边做账号，双赛道让我半年涨粉 5 万', tags:[['抖音','red'],['双赛道组合','green']], likes:'175.3万', saves:'110.4万', fire:'最适合新人，认知 + 实操互相引流', borrow:'分享你的学习过程本身就是内容', vid:'7666771711584712335' },
-    { title:'女生 25 岁后，请把这 5 件事提上日程', tags:[['小红书','red'],['女性成长','purple']], likes:'98.2万', saves:'42.7万', fire:'清单体 + 年龄焦虑，传播力强', borrow:'挑 1 件展开拍，配自身经历', vid:'7122612824777542949', ptype:'note' },
-    { title:'影子跟读 + 女性成长：用英语讲女性的故事', tags:[['抖音','red'],['双赛道组合','green']], likes:'61.5万', saves:'37.2万', fire:'差异化人设，避开纯英语赛道内卷', borrow:'选一位女性人物英文演讲做跟读素材', vid:'7572663102556094441' },
-    { title:'听力总是听不懂？可能是你没分清这 5 个连读', tags:[['抖音','red'],['英语学习','blue']], likes:'33.8万', saves:'22.6万', fire:'痛点精准 + 干货密度高', borrow:'每条拆 1 个连读现象，做成长系列', vid:'7663126053522852955' },
-    { title:'成为值得被关注的人，而不是讨好别人', tags:[['小红书','red'],['女性成长','purple']], likes:'210.6万', saves:'88.3万', fire:'观点冲击 + 身份认同', borrow:'用英文金句做封面，双语输出强化人设', vid:'7122612824777542949', ptype:'note' },
-    { title:'零基础影子跟读：从短句开始的完整路线', tags:[['小红书','red'],['影子跟读','blue']], likes:'29.4万', saves:'19.7万', fire:'人群细分（零基础）+ 路线图', borrow:'做「跟读难度等级表」便于追更', vid:'7572663102556094441' },
-    { title:'学英语 + 做账号 = 最适合普通人的复利组合', tags:[['抖音','red'],['双赛道组合','green']], likes:'128.9万', saves:'74.5万', fire:'方法论 + 身份投射', borrow:'讲清楚「为什么是这两个赛道组合」', vid:'7666771711584712335' }
+  const BIZ_DATA = [
+    { cat: '询盘报价', en: 'We are pleased to offer you the following items at the prices quoted.', zh: '很高兴按以下报价向您提供商品。', tip: '报价函开头常用句式，搭配valid until说明报价有效期' },
+    { cat: '询盘报价', en: 'Please find attached our quotation sheet for your reference.', zh: '请查收附件中的报价单供参考。', tip: '邮件正文附附件时的标准表达' },
+    { cat: '谈判议价', en: 'Considering the quality, our price is quite competitive.', zh: '就质量而言，我们的价格很有竞争力。', tip: '拒绝还价时的委婉话术' },
+    { cat: '谈判议价', en: 'We can offer a 5% discount for orders over 1,000 units.', zh: '订单超过1000件可享5%折扣。', tip: '阶梯报价策略' },
+    { cat: '订单确认', en: 'We hereby confirm the following order with the terms and conditions stated below.', zh: '我们确认以下订单，条款如下。', tip: '订单确认函正式表达' },
+    { cat: '订单确认', en: 'Please arrange production upon receipt of this purchase order.', zh: '收到采购订单后请安排生产。', tip: 'PO下发标准指令' },
+    { cat: '物流运输', en: 'The goods will be shipped by sea freight under FOB Shanghai terms.', zh: '货物将按FOB上海条款海运装运。', tip: '贸易术语+装运港搭配' },
+    { cat: '物流运输', en: 'The estimated time of arrival (ETA) is around August 15th.', zh: '预计到港时间约8月15日。', tip: 'ETA/ETD是物流邮件高频缩写' },
+    { cat: '付款条件', en: 'Payment is to be made by irrevocable L/C at sight.', zh: '付款方式为不可撤销即期信用证。', tip: 'L/C at sight是国际贸易最常见付款方式' },
+    { cat: '付款条件', en: 'We require 30% deposit by T/T in advance, balance before shipment.', zh: '需T/T预付30%定金，尾款装运前付清。', tip: 'T/T分次付款常见条款' },
+    { cat: '售后客诉', en: 'We apologize for the inconvenience caused and will arrange a replacement immediately.', zh: '对造成的不便深表歉意，将立即安排换货。', tip: '客诉回复标准三步：道歉+原因+方案' },
+    { cat: '售后客诉', en: 'Please provide photos of the damaged goods for our quality team to investigate.', zh: '请提供破损货物照片以便质量团队调查。', tip: '索赔时的证据收集话术' },
   ];
-  let inspireShown = [];
-  function shufflePool() {
-    const pool = [...inspirePool];
-    for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
-    inspireShown = pool.slice(0, 4);
-  }
-  function renderInspire() {
-    const list = document.getElementById('noteList');
-    list.innerHTML = inspireShown.map((n, i) => `
-      <div class="note-card">
-        <div class="note-card-header"><div class="note-index">${i+1}</div><div class="note-title">${n.title}</div></div>
-        <div class="note-tags">${n.tags.map(t => `<span class="tag tag-${t[1]}">${t[0]}</span>`).join('')}</div>
-        <div class="note-stats"><span>👍 赞 ${n.likes}</span><span>⭐ 收藏 ${n.saves}</span></div>
-        <div class="note-analysis">
-          <div class="analysis-row"><span class="analysis-label label-fire">为什么火</span><span class="analysis-text">${n.fire}</span></div>
-          <div class="analysis-row"><span class="analysis-label label-borrow">可借鉴</span><span class="analysis-text">${n.borrow}</span></div>
-        </div>
-        <div class="note-actions">
-          <button class="btn btn-outline" data-act="join" data-i="${i}">+ 加入计划</button>
-          <button class="btn btn-primary" data-act="open-inspire" data-i="${i}">看视频 ↗</button>
-        </div>
-        <div class="note-actions tight">
-          <button class="btn btn-outline" style="font-size:11px;" data-act="copy" data-title="${n.title.replace(/"/g,'&quot;')}">复制标题</button>
-        </div>
-      </div>
-    `).join('');
-  }
-  shufflePool(); renderInspire();
-  // 是否运行在 iOS PWA 全屏模式（添加到主屏幕后）
-  const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
 
-  // 智能跳转抖音作品：手机端优先拉起抖音 App，失败回退网页版
-  function openDouyinWork(item) {
-    if (!item || !item.vid) { toast('暂未绑定视频'); return; }
-    const vid = item.vid;
-    const isNote = item.ptype === 'note';
-    const webUrl = isNote ? `https://www.douyin.com/note/${vid}` : `https://www.douyin.com/video/${vid}`;
-    const deeplink = `snssdk1128://aweme/detail/${vid}`;
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-    if (isMobile) {
-      // PWA 全屏模式：直接跳网页版（deeplink 在 standalone 下行为不稳，且 location.href 会让用户困在 PWA 内）
-      if (isStandalone) {
-        window.open(webUrl, '_blank');   // PWA 里 window.open 会切到 Safari，保留 PWA
-        toast('已用浏览器打开，看完返回本应用');
-        return;
-      }
-      // 普通 mobile 浏览器：先尝试 deeplink 拉起 App
-      const a = document.createElement('a');
-      a.href = deeplink;
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      const start = Date.now();
-      a.click();
-      document.body.removeChild(a);
-      // 400ms 后若页面仍可见且时间没大幅流逝 → App 没拉起，跳网页版
-      setTimeout(() => {
-        if (document.hidden || document.webkitHidden) return;     // App 已拉起
-        if (Date.now() - start > 1000) return;                     // 曾切走又回来，视为已拉起
-        window.location.href = webUrl;                             // 回退网页版
-      }, 400);
-      toast('正在打开抖音…');
-    } else {
-      // 桌面端：在 click 手势内直接 open，避免被拦截
-      window.open(webUrl, '_blank');
-    }
-  }
-
-  function refreshInspire() {
-    const icon = document.getElementById('refreshIcon');
-    icon.style.transition = 'transform 0.6s'; icon.style.transform = 'rotate(360deg)';
-    setTimeout(() => { icon.style.transform = 'rotate(0deg)'; }, 600);
-    shufflePool(); renderInspire(); toast('已换一批爆款拆解');
-  }
-
-  // ========== 热点二创 ==========
-  const hotPool = [
-    { title:'# 影子跟读 30 天挑战', platform:'抖音', tag:'英语学习', vid:'7665561402261753115', desc:'话题播放 1.8 亿，跟练打卡类高热。二创：发起自己的 30 天跟读打卡。' },
-    { title:'# 女生独居也要闪闪发光', platform:'小红书', tag:'女性成长', vid:'7375058794700606730', desc:'浏览 5800 万+，生活态度类。二创：用英文配音独居 vlog，双赛道联动。' },
-    { title:'# 记单词神仙方法', platform:'抖音', tag:'英语学习', vid:'7664998520151894894', desc:'播放 9200 万，方法论类。二创：拆 1 个词根，做成 30 秒干货。' },
-    { title:'# 25 岁后才懂的道理', platform:'小红书', tag:'女性成长', vid:'7122612824777542949', ptype:'note', desc:'浏览 1.2 亿，成长共鸣。二创：挑 1 条用英文金句改写口播。' },
-    { title:'# 通勤听力神器', platform:'抖音', tag:'英语学习', vid:'7666771711584712335', desc:'播放 6700 万，场景化干货。二创：推荐 3 个播客 + 听写笔记。' },
-    { title:'# 边学边分享', platform:'抖音', tag:'双赛道组合', vid:'7666771711584712335', desc:'播放 4300 万，新人友好。二创：讲你的双赛道组合打法。' }
+  const GRAMMAR_DATA = [
+    { wrong: 'I have seen him yesterday.', right: 'I saw him yesterday.', rule: 'yesterday是明确的过去时间标志，必须用一般过去时，不能用现在完成时' },
+    { wrong: 'She is taller than me.', right: 'She is taller than I (am).', rule: '口语中than me可接受，正式书面语用than I am或than I' },
+    { wrong: 'He suggested me to go home.', right: 'He suggested that I (should) go home.', rule: 'suggest后不接sb to do，用suggest that + 主语 + (should) + 动词原形' },
+    { wrong: 'I look forward to see you.', right: 'I look forward to seeing you.', rule: 'look forward to中to是介词，后接动名词doing' },
+    { wrong: 'There are many informations.', right: 'There is much information.', rule: 'information是不可数名词，用much修饰，谓语用单数' },
+    { wrong: 'I have been to Paris in 2019.', right: 'I went to Paris in 2019.', rule: 'in 2019是具体过去时间，用一般过去时' },
+    { wrong: 'The news are good.', right: 'The news is good.', rule: 'news看似复数实为不可数名词，谓语用单数' },
+    { wrong: 'He is married with a doctor.', right: 'He is married to a doctor.', rule: '与某人结婚用married to sb，不用with' },
+    { wrong: 'I will go until you come.', right: 'I will wait until you come.', rule: 'until表示"直到…为止"，主句需是持续性动词' },
+    { wrong: 'She is enough old to drive.', right: 'She is old enough to drive.', rule: 'enough修饰形容词时放在形容词后面' },
+    { wrong: 'I have gone to London twice.', right: 'I have been to London twice.', rule: 'have been to表示去过已回；have gone to表示去了未回' },
+    { wrong: 'Neither of the answers are correct.', right: 'Neither of the answers is correct.', rule: 'neither作主语时谓语用单数' },
   ];
-  let hotShown = [];
-  function shuffleHot() {
-    const pool = [...hotPool];
-    for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
-    hotShown = pool.slice(0, 4);
-  }
-  function renderHot() {
-    const list = document.getElementById('hotList');
-    const tagClass = { '抖音':'orange', '小红书':'red', '英语学习':'blue', '女性成长':'purple', '双赛道组合':'green' };
-    list.innerHTML = hotShown.map((h, i) => `
-      <div class="content-card clickable" data-act="open-hot" data-i="${i}">
-        <div class="content-card-title">${h.title}</div>
-        <div class="content-card-desc">${h.desc}</div>
-        <div class="content-card-meta">
-          <span class="tag tag-${tagClass[h.platform]||'orange'}">${h.platform}</span>
-          <span class="tag tag-${tagClass[h.tag]||'blue'}">${h.tag}</span>
-          <span class="link-arrow">直达作品 ↗</span>
+
+  const VOCAB_DATA = [
+    { en: 'accomplish', zh: '完成，实现', ex: 'We accomplished our goal ahead of schedule.' },
+    { en: 'negotiate', zh: '谈判，协商', ex: 'We need to negotiate a better price with the supplier.' },
+    { en: 'reliable', zh: '可靠的', ex: 'They are a reliable partner for long-term cooperation.' },
+    { en: 'postpone', zh: '推迟', ex: 'The meeting has been postponed to next Monday.' },
+    { en: 'invoice', zh: '发票', ex: 'Please send us the proforma invoice for confirmation.' },
+    { en: 'efficient', zh: '高效的', ex: 'This is the most efficient way to handle the issue.' },
+    { en: 'compromise', zh: '妥协，折中', ex: 'Both sides need to compromise to reach an agreement.' },
+    { en: 'guarantee', zh: '保证，担保', ex: 'We guarantee the quality of all our products.' },
+    { en: 'substantial', zh: '大量的，可观的', ex: 'We received a substantial order from a new client.' },
+    { en: 'deadline', zh: '截止日期', ex: 'Please confirm the order before the deadline.' },
+    { en: 'in advance', zh: '提前', ex: 'Please book the flight in advance to get a better price.' },
+    { en: 'take into account', zh: '考虑到', ex: 'We must take shipping costs into account.' },
+    { en: 'on behalf of', zh: '代表', ex: 'I am writing on behalf of our company.' },
+    { en: 'comply with', zh: '遵守，符合', ex: 'All products must comply with safety standards.' },
+    { en: 'be subject to', zh: '取决于，须经', ex: 'The final price is subject to our confirmation.' },
+  ];
+
+  const TOPIC_DATA = [
+    { title: '5个让英语听力猛涨的播客推荐', cat: '英语类', status: 'pending', summary: '精选适合通勤碎片时间听的英文播客，按难度分级' },
+    { title: '我用AI辅助学英语的7个真实场景', cat: 'AI工具教程', status: 'pending', summary: 'ChatGPT练口语/豆包对话/Claude改作文等实战演示' },
+    { title: '打工人的一天Vlog｜自律早起到晚间复盘', cat: 'Vlog', status: 'pending', summary: '记录一天时间管理，穿插英语学习片段' },
+    { title: '大方脸也能驾驭的3款日常妆容', cat: '美妆穿搭', status: 'done', summary: '修容+眉形+唇色搭配，视觉缩窄下颌' },
+    { title: '新概念2第4课：现在完成时3分钟讲透', cat: '英语类', status: 'done', summary: 'have been vs have gone对比+生活例句' },
+    { title: '外贸英语｜报价邮件万能模板', cat: '英语类', status: 'pending', summary: '从询盘到报价的完整邮件句式拆解' },
+    { title: '秋冬通勤穿搭｜一衣多穿思路', cat: '美妆穿搭', status: 'pending', summary: '一件西装外套搭出5套不同风格' },
+    { title: 'AI帮我10分钟做完整周计划表', cat: 'AI工具教程', status: 'pending', summary: '用AI工具自动化排期+优先级标注' },
+    { title: '周末Vlog｜整理房间也是整理心情', cat: 'Vlog', status: 'done', summary: '断舍离过程+治愈系BGM+英文字幕练习' },
+    { title: '影子跟读30天打卡总结', cat: '英语类', status: 'pending', summary: '每日跟读素材选择+进步对比+方法调整' },
+    { title: '四季色彩分析｜我是哪型人', cat: '美妆穿搭', status: 'pending', summary: '春夏秋冬十二型自测方法+配色建议' },
+    { title: '手机拍出电影感画面的5个技巧', cat: 'AI工具教程', status: 'done', summary: '构图+调色+运镜，零设备门槛' },
+  ];
+
+  const SCRIPT_DATA = [
+    { cat: '英语类', title: '英语知识点科普短视频脚本', duration: '45-60秒', content: [
+      { part: '开场(0-5s)', text: '你知道吗？90%的人都会搞混这两个英语表达 👆（抛出痛点，停留钩子）' },
+      { part: '引入(5-10s)', text: '今天花1分钟讲清楚，记得收藏（引导互动）' },
+      { part: '正文(10-40s)', text: '对比展示错误vs正确表达，配生活场景例句。用分屏或字幕高亮关键词' },
+      { part: '总结(40-50s)', text: '一句话总结记忆口诀，方便截图保存' },
+      { part: '引导(50-60s)', text: '评论区写出你的造句，我帮你改～关注获取每日英语干货' },
+    ]},
+    { cat: 'AI工具教程', title: 'AI工具效率教程脚本', duration: '60-90秒', content: [
+      { part: '痛点(0-5s)', text: '还在手动做XX？这个AI工具帮你省3小时（痛点+数字吸引）' },
+      { part: '演示(5-50s)', text: '录屏演示完整操作流程：打开工具→输入指令→生成结果→微调输出。关键步骤加文字标注' },
+      { part: '对比(50-70s)', text: '传统方法 vs AI方法的效果/耗时对比，直观感受效率提升' },
+      { part: '引导(70-90s)', text: '工具链接放评论区。关注我，每周分享效率神器' },
+    ]},
+    { cat: 'Vlog', title: '日常Vlog脚本框架', duration: '1-3分钟', content: [
+      { part: '晨间(0-20s)', text: '自然光+闹钟/拉开窗帘特写，配轻音乐。文字标注时间' },
+      { part: '主体(20s-结束前20s)', text: '按时间线记录关键事件，每个场景3-5秒，用转场连接。穿插1-2个思考/感受旁白' },
+      { part: '收尾(最后20s)', text: '日落/夜景/收工画面，旁白总结今天的小确幸。文字引导关注' },
+    ]},
+    { cat: '美妆穿搭', title: '美妆教程脚本', duration: '45-60秒', content: [
+      { part: '素颜(0-5s)', text: '素颜出镜展示妆前状态，建立真实感' },
+      { part: '要点(5-10s)', text: '今天分享适合XX脸型的妆容思路（点明适配人群）' },
+      { part: '步骤(10-45s)', text: '分步骤展示：底妆→眉眼→修容→唇妆。每步配文字标注产品+手法要点' },
+      { part: '对比(45-55s)', text: '妆前妆后对比，展示效果' },
+      { part: '引导(55-60s)', text: '产品清单放评论区，关注获取更多穿搭美妆灵感' },
+    ]},
+  ];
+
+  const HOTSPOT_DATA = [
+    { topic: 'AI口语陪练工具合集', heat: '🔥🔥🔥', analysis: '近期豆包/ChatGPT语音功能热度高，英语学习+AI结合是蓝海赛道。建议做横评或单工具深度教程' },
+    { topic: '秋冬通勤穿搭', heat: '🔥🔥', analysis: '换季是穿搭内容爆发期。一衣多穿/胶囊衣橱概念流量稳定，适合搭配单品清单' },
+    { topic: '新概念英语系统学', heat: '🔥🔥', analysis: '知识类持续有需求。按课做系列视频，每课1个知识点，适合建立合集栏目' },
+    { topic: '自律打卡Vlog', heat: '🔥🔥🔥', analysis: '晨间routine/晚间复盘类内容长期热门。可结合英语学习/健身形成个人IP记忆点' },
+    { topic: '大方脸/方圆脸妆容', heat: '🔥🔥', analysis: '脸型适配妆容是精准流量入口。修容+发型+眉形三件套讲解转化高' },
+    { topic: '外贸英语实战', heat: '🔥', analysis: '垂直细分赛道竞争小。场景化教学（报价/谈判/客诉）适合做系列' },
+    { topic: '手机摄影/剪辑技巧', heat: '🔥🔥', analysis: '工具教程类常青内容。结合AI调色/一键成片新功能做更新' },
+  ];
+
+  const REVIEW_DATA = [
+    { dim: '完播率', content: '前3秒是否抓住注意力？中间是否有流失点？目标完播率>30%' },
+    { dim: '互动率', content: '点赞/评论/收藏/转发比例。引导互动话术是否有效？评论区是否有讨论' },
+    { dim: '涨粉效果', content: '该视频带来的净增粉丝数。是否触达新人群？关注转化率多少' },
+    { dim: '内容质量', content: '信息密度是否合适？有无口水话？画面/收音/字幕是否达标' },
+    { dim: '选题方向', content: '该选题数据是否符合预期？是否值得做系列化？同类竞品数据对比' },
+    { dim: '发布时机', content: '发布时间段流量表现。可测试不同时段发布，找到最佳发布时间' },
+  ];
+
+  const OUTFIT_DATA = [
+    { name: '暖橘色秋冬通勤', palette: '焦糖橙+米白+深棕', desc: '焦糖橙针织衫+米白直筒裤+深棕短靴，适合秋季通勤，温暖大方', emoji: '🧡', bg: '#ffe9d2' },
+    { name: '莫兰迪灰蓝日常', palette: '灰蓝+白+浅灰', desc: '灰蓝衬衫+白色阔腿裤+浅灰开衫，低调高级感，适合办公场景', emoji: '💙', bg: '#e0eaf5' },
+    { name: '大地色系叠穿', palette: '卡其+燕麦+驼色', desc: '燕麦打底+卡其马甲+驼色大衣，层次分明，秋冬经典配色', emoji: '🤎', bg: '#f0e6d6' },
+    { name: '雾霾紫温柔风', palette: '雾紫+白+浅灰', desc: '雾紫毛衣+白色半裙+浅灰围巾，柔和显白，约会通勤两相宜', emoji: '💜', bg: '#efe3f3' },
+    { name: '黑白极简', palette: '黑+白+银灰', desc: '白T+黑色西装裤+银灰球鞋，极简不挑人，适合所有场合', emoji: '🖤', bg: '#eee' },
+    { name: '墨绿复古', palette: '墨绿+米白+棕', desc: '墨绿针织+米白百褶裙+棕靴，复古文艺，秋冬出片利器', emoji: '💚', bg: '#e6f0db' },
+  ];
+
+  const MAKEUP_DATA = [
+    { name: '方脸修容核心思路', points: ['下颌角打阴影向内收，额头两侧轻扫', '高光提亮下巴中央和额头中央，拉长脸型', '腮红斜扫颧骨上方，不横向铺开', '眉毛挑高拉长，视觉缩窄下半脸'] },
+    { name: '日常通勤妆容', points: ['底妆轻薄，重点遮瑕黑眼圈和嘴角暗沉', '眉毛自然填充，眉峰不要太锐利', '眼妆用大地色系，内眼线即可', '唇色选豆沙/干枯玫瑰，低调显气色'] },
+    { name: '显白配色妆容', points: ['暖皮选橘调/砖红腮红，冷皮选粉色/梅子色', '口红避开荧光色和裸色，选饱和度适中的', '眼影与腮红同色系，整体统一不杂乱', '高光点在鼻尖+颧骨+唇珠，自然光泽感'] },
+    { name: '秋冬妆容重点', points: ['底妆偏哑光，控油持妆是关键', '眉色比发色深一号，更有精神', '唇妆选浆果色/红棕色，季节适配', '修容比夏天稍重，配合深色衣物'] },
+  ];
+
+  const WARDROBE_DATA = [
+    { name: '一衣多穿：白衬衫', logic: '白衬衫可搭配：+牛仔裤=休闲；+西装裤=通勤；+半裙=优雅；+马甲=层次感。一件单品4种风格', emoji: '👔' },
+    { name: '胶囊衣橱：秋冬10件', logic: '2件外套+3件上衣+2条裤子+1条裙子+2双鞋。全部互搭，可组合出30+套look', emoji: '🧥' },
+    { name: '配色公式：3色法则', logic: '全身颜色不超过3个色系。主色60%+辅助色30%+点缀色10%。最安全的高级感配色', emoji: '🎨' },
+    { name: '身材适配：H型', logic: 'H型身材重点制造腰线。选高腰下装+短上衣，或系腰带的大衣，避免直筒无腰', emoji: '📏' },
+    { name: '叠穿层次：3层法则', logic: '内搭打底+中间层(马甲/针织)+外层(外套/大衣)。层次感来自长短差和材质对比', emoji: '🧶' },
+  ];
+
+  const HEALTH_DATA = [
+    { cat: '日常观察', items: ['记录每日睡眠时长和质量（入睡时间/夜醒次数）', '观察精力变化：上午/下午/晚间哪个时段最疲惫', '记录饮食与身体反应的关系（如饭后犯困/腹胀）', '情绪状态追踪：压力/焦虑/平稳的天数占比'] },
+    { cat: '休养要点', items: ['保证7-8小时睡眠，尽量23点前入睡', '每日温和运动20-30分钟（散步/拉伸/瑜伽）', '饮食定时定量，减少生冷油腻和晚间咖啡因', '每坐1小时起身活动5分钟，避免久坐'] },
+    { cat: '警示信号', items: ['持续头痛/头晕超过3天需就医', '不明原因体重骤变（1个月内±5斤以上）', '长期疲劳休息后不缓解，建议查血常规/甲状腺', '胸闷心悸频繁发作，及时做心电图'] },
+  ];
+
+  const CHECKUP_DATA = [
+    { name: '血常规+肝肾功能', cycle: '每3-6个月', note: '术后/用药期间遵医嘱复查，指标正常后可延长间隔' },
+    { name: '甲状腺功能', cycle: '每6个月', note: '如有甲减/甲亢用药，需定期监测TSH/T3/T4' },
+    { name: '妇科超声', cycle: '每年1次', note: '20岁以上建议纳入常规体检' },
+    { name: '乳腺检查', cycle: '每年1次', note: '超声+触诊，有家族史者提前至30岁起' },
+    { name: '骨密度', cycle: '每2年', note: '30岁后关注，有骨质疏松风险者每年' },
+    { name: '视力+眼底', cycle: '每年1次', note: '长期用眼/高度近视者必查' },
+    { name: '口腔检查', cycle: '每半年', note: '洗牙+龋齿检查，预防优于治疗' },
+  ];
+
+  // ========== 渲染函数 ==========
+  function renderNCE() {
+    const items = pickN(NCE_DATA, 4);
+    $('nceList').innerHTML = items.map(d => `
+      <div class="content-card">
+        <div class="card-title">${escapeHtml(d.lesson)}</div>
+        <div class="card-body">
+          <p><strong>学习重点：</strong><span class="hl">${escapeHtml(d.focus)}</span></p>
+          <p><strong>语法解析：</strong>${escapeHtml(d.grammar)}</p>
+          <p><strong>复述示范：</strong>${escapeHtml(d.retell)}</p>
+          <button class="speak-btn" data-act="speak" data-text="${escapeHtml(d.retell)}" style="margin-top:6px;">🔊 朗读复述</button>
         </div>
-      </div>
-    `).join('');
-  }
-  shuffleHot(); renderHot();
-  function refreshHot() {
-    const icon = document.getElementById('hotIcon');
-    icon.style.transition = 'transform 0.6s'; icon.style.transform = 'rotate(360deg)';
-    setTimeout(() => { icon.style.transform = 'rotate(0deg)'; }, 600);
-    shuffleHot(); renderHot(); toast('热榜已刷新');
+      </div>`).join('');
   }
 
-  // ========== 内容复盘（链接可编辑，持久化）==========
-  const reviewData = [
-    { title:'影子跟读 30 天打卡 · Day1', platform:'抖音', plays:'12.8万', likes:'8600', saves:'3200', finish:'46%', status:'优秀' },
-    { title:'记单词 3 步记忆法', platform:'抖音', plays:'6.8万', likes:'3200', saves:'1100', finish:'28%', status:'中规中矩' },
-    { title:'女孩请把时间花在增值上', platform:'小红书', plays:'3.2万', likes:'1800', saves:'640', finish:'52%', status:'优秀' },
-    { title:'通勤听力播客推荐', platform:'抖音', plays:'9200', likes:'410', saves:'88', finish:'18%', status:'待优化' }
-  ];
-  function renderReview() {
-    const list = document.getElementById('reviewList');
-    const statusClass = { '优秀':'green', '中规中矩':'orange', '待优化':'red' };
-    list.innerHTML = reviewData.map((r, i) => {
-      const url = reviewLinks[r.title] || '';
-      return `
-      <div class="content-card clickable" data-act="open-review" data-i="${i}">
-        <div class="content-card-title">${r.title}</div>
-        <div class="content-card-desc">播放 ${r.plays} · 点赞 ${r.likes} · 收藏 ${r.saves} · 完播率 ${r.finish}</div>
-        <div class="content-card-meta">
-          <span class="tag tag-${r.platform==='抖音'?'orange':'red'}">${r.platform}</span>
-          <span class="tag tag-${statusClass[r.status]||'yellow'}">${r.status}</span>
-          <span class="link-badge ${url?'':'empty'}">${url?'已绑定':'未绑定'}</span>
-          <button class="edit-link-btn" data-act="toggle-edit" data-type="review" data-i="${i}">编辑链接</button>
+  function renderBiz() {
+    const items = pickN(BIZ_DATA, 6);
+    $('bizList').innerHTML = items.map(d => `
+      <div class="content-card">
+        <div class="tag-row"><span class="tag tag-orange">${escapeHtml(d.cat)}</span></div>
+        <div class="card-body">
+          <p><strong>${escapeHtml(d.en)}</strong></p>
+          <p>${escapeHtml(d.zh)}</p>
+          <p style="color:var(--text-muted);font-size:11px;">💡 ${escapeHtml(d.tip)}</p>
+          <button class="speak-btn" data-act="speak" data-text="${escapeHtml(d.en)}" style="margin-top:4px;">🔊 朗读</button>
         </div>
-        <div class="link-edit-row" id="review-edit-${i}">
-          <input type="text" class="link-edit-input" id="review-input-${i}" placeholder="粘贴作品真实链接" value="${url}" />
-          <div class="link-edit-actions">
-            <button class="btn-save" data-act="save-link" data-type="review" data-i="${i}">保存</button>
-            <button class="btn-cancel" data-act="toggle-edit" data-type="review" data-i="${i}">取消</button>
-          </div>
+      </div>`).join('');
+  }
+
+  function renderGrammar() {
+    const items = pickN(GRAMMAR_DATA, 5);
+    $('grammarList').innerHTML = items.map(d => `
+      <div class="content-card">
+        <div class="card-body">
+          <p>❌ <span style="color:var(--tag-red-text);text-decoration:line-through;">${escapeHtml(d.wrong)}</span></p>
+          <p>✅ <span style="color:var(--tag-green-text);font-weight:600;">${escapeHtml(d.right)}</span></p>
+          <p style="color:var(--text-muted);font-size:11px;margin-top:4px;">📌 ${escapeHtml(d.rule)}</p>
         </div>
+      </div>`).join('');
+  }
+
+  function renderVocab() {
+    const items = pickN(VOCAB_DATA, 8);
+    $('vocabList').innerHTML = `<div class="content-card">` + items.map(d => `
+      <div class="word-item">
+        <div class="word-en">${escapeHtml(d.en)} <button class="speak-btn" data-act="speak" data-text="${escapeHtml(d.en)}" style="margin-left:4px;">🔊</button></div>
+        <div class="word-zh">${escapeHtml(d.zh)}</div>
+        <div class="word-ex">${escapeHtml(d.ex)}</div>
+      </div>`).join('') + `</div>`;
+  }
+
+  function renderTopics() {
+    const filters = ['all','英语类','AI工具教程','Vlog','美妆穿搭','pending','done'];
+    const labels = { all:'全部', pending:'待拍摄', done:'已发布' };
+    $('topicFilters').innerHTML = filters.map(f => {
+      const label = labels[f] || f;
+      return `<span class="filter-chip ${store.topicFilter===f?'active':''}" data-act="filter-topic" data-cat="${f}">${label}</span>`;
+    }).join('');
+    let items = TOPIC_DATA.map((t, i) => ({ ...t, idx: i, status: store.topicStatus[i] || t.status }));
+    if (store.topicFilter === 'pending') items = items.filter(t => t.status === 'pending');
+    else if (store.topicFilter === 'done') items = items.filter(t => t.status === 'done');
+    else if (store.topicFilter !== 'all') items = items.filter(t => t.cat === store.topicFilter);
+    $('topicTable').innerHTML = `
+      <div class="content-card" style="padding:8px 10px;">
+        <table class="topic-table">
+          <tr><th>选题</th><th>分类</th><th>状态</th></tr>
+          ${items.map(t => `
+            <tr>
+              <td><div class="topic-title-cell">${escapeHtml(t.title)}</div><div class="topic-summary-cell">${escapeHtml(t.summary)}</div></td>
+              <td><span class="tag tag-blue" style="white-space:nowrap;">${escapeHtml(t.cat)}</span></td>
+              <td><span class="status-chip ${t.status==='done'?'status-done':'status-pending'}" data-act="toggle-topic" data-idx="${t.idx}">${t.status==='done'?'已发布':'待拍摄'}</span></td>
+            </tr>`).join('')}
+        </table>
       </div>`;
-    }).join('');
   }
-  renderReview();
 
-  // ========== 每日计划（按日期分组折叠）==========
-  function getSortedDateKeys() {
-    return Object.keys(tasksByDate).sort((a,b) => b.localeCompare(a));
+  function renderScripts() {
+    const items = pickN(SCRIPT_DATA, 2);
+    $('scriptList').innerHTML = items.map(s => `
+      <div class="content-card">
+        <div class="card-title">${escapeHtml(s.title)} <span class="tag tag-purple">${escapeHtml(s.cat)}</span> <span class="tag tag-yellow">${escapeHtml(s.duration)}</span></div>
+        <div class="card-body">
+          ${s.content.map(c => `<p><strong>${escapeHtml(c.part)}：</strong>${escapeHtml(c.text)}</p>`).join('')}
+        </div>
+      </div>`).join('');
   }
-  function renderTasks() {
-    const container = document.getElementById('taskGroups');
-    const keys = getSortedDateKeys();
-    const tk = todayKey();
-    if (!keys.length) { container.innerHTML = '<div class="empty-hint">还没有任务</div>'; updateTaskProgress(); return; }
 
-    container.innerHTML = keys.map(key => {
-      const tasks = tasksByDate[key];
-      const isToday = key === tk;
-      const doneN = tasks.filter(t=>t.done).length;
-      const collapsed = collapsedDates[key] ? 'collapsed' : '';
-      const groupClass = isToday ? 'date-group-today' : 'date-group-archive';
-      return `
-        <div class="date-group ${collapsed} ${groupClass}">
-          <div class="date-group-head" data-act="toggle-date" data-key="${key}">
-            <span class="date-group-arrow">▼</span>
-            <span class="date-group-title">${dateKeyLabel(key)}</span>
-            <span class="date-group-summary">${doneN}/${tasks.length}</span>
-          </div>
-          <div class="date-group-body">
-            <ul class="task-list">
-              ${tasks.map((t, i) => `
-                <li class="task-item ${t.done?'done':''}" data-act="toggle-task" data-key="${key}" data-i="${i}">
-                  <div class="task-checkbox">${t.done?'✓':''}</div>
-                  <div class="task-text">${escapeHtml(t.text)}${isEnglishTask(t.text)?' <span class="tag tag-blue" style="font-size:9px;padding:1px 5px;margin-left:4px;">英语</span>':''}</div>
-                  <div class="task-delete" data-act="del-task" data-key="${key}" data-i="${i}">×</div>
-                </li>
-              `).join('')}
-            </ul>
+  function renderHotspots() {
+    const items = pickN(HOTSPOT_DATA, 4);
+    $('hotspotList').innerHTML = items.map(h => `
+      <div class="content-card">
+        <div class="card-title">${escapeHtml(h.topic)} <span style="font-size:12px;">${h.heat}</span></div>
+        <div class="card-body"><p>${escapeHtml(h.analysis)}</p></div>
+      </div>`).join('');
+  }
+
+  function renderReview() {
+    $('reviewList').innerHTML = `<div class="content-card">` + REVIEW_DATA.map(r => `
+      <div class="review-dim">
+        <div class="review-dim-label">${escapeHtml(r.dim)}</div>
+        <div class="review-dim-content">${escapeHtml(r.content)}</div>
+      </div>`).join('') + `</div>`;
+  }
+
+  function renderOutfits() {
+    const items = pickN(OUTFIT_DATA, 4);
+    $('outfitList').innerHTML = items.map(o => `
+      <div class="content-card">
+        <div class="outfit-card">
+          <div class="outfit-thumb" style="background:${o.bg};">${o.emoji}</div>
+          <div class="outfit-info">
+            <div class="outfit-name">${escapeHtml(o.name)}</div>
+            <div class="tag-row" style="margin-bottom:4px;"><span class="tag tag-orange">${escapeHtml(o.palette)}</span></div>
+            <div class="outfit-desc">${escapeHtml(o.desc)}</div>
           </div>
         </div>
-      `;
-    }).join('');
-    updateTaskProgress();
-  }
-  function updateTaskProgress() {
-    const tk = todayKey();
-    const tasks = tasksByDate[tk] || [];
-    const doneN = tasks.filter(t=>t.done).length;
-    document.getElementById('taskDoneText').textContent = `${doneN} / ${tasks.length} 完成`;
-    document.getElementById('taskProgressFill').style.width = tasks.length ? (doneN/tasks.length*100)+'%' : '0%';
-    if (typeof renderStudyTasks === 'function') renderStudyTasks();
-  }
-  function addTask() {
-    const input = document.getElementById('taskInput');
-    const text = input.value.trim();
-    if (!text) { toast('先写点啥吧'); return; }
-    const tk = todayKey();
-    if (!tasksByDate[tk]) tasksByDate[tk] = [];
-    tasksByDate[tk].push({ text, done: false });
-    input.value = ''; saveStore(); renderTasks();
-    toast(isEnglishTask(text) ? '已添加，已同步到英语学习' : '已添加任务');
-  }
-  document.getElementById('taskInput').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
-
-  function resetToday() {
-    const tk = todayKey();
-    if (tasksByDate[tk]) tasksByDate[tk].forEach(t => t.done = false);
-    saveStore(); renderTasks();
-    toast('今日已重置，新的一天加油！');
+      </div>`).join('');
   }
 
-  // ========== 英语学习 · 英语口语每日对话 ==========
-  // 分类定义
-  const studyCategoriesDef = [
-    { key: 'all', label: '全部', emoji: '🍊' },
-    { key: '寒暄', label: '寒暄', emoji: '👋' },
-    { key: '职场', label: '职场', emoji: '💼' },
-    { key: '餐饮', label: '餐饮', emoji: '🍽️' },
-    { key: '购物', label: '购物', emoji: '🛒' },
-    { key: '旅行', label: '旅行', emoji: '✈️' },
-    { key: '社交', label: '社交', emoji: '💬' },
-    { key: '电话', label: '电话', emoji: '📞' },
-    { key: '求助', label: '求助', emoji: '🙋' },
-    { key: '情感', label: '情感', emoji: '❤️' },
-    { key: '观点', label: '观点', emoji: '💡' },
-    { key: 'fav', label: '收藏', emoji: '⭐' },
-    { key: 'unpractice', label: '未练', emoji: '✓' },
-  ];
-  // 生活场景对话池（按日期抽取每日30条）
-  const dialoguePool = [
-    { category: '寒暄', level: 1, lines: [
-      { en: 'A: Nice to meet you!', zh: 'A: 很高兴认识你！' },
-      { en: 'B: Nice to meet you too! I\'ve heard a lot about you.', zh: 'B: 我也是！久仰大名了。' }
-    ]},
-    { category: '寒暄', level: 1, lines: [
-      { en: 'A: How have you been?', zh: 'A: 最近怎么样？' },
-      { en: 'B: Pretty good, thanks. Just busy with work.', zh: 'B: 还不错，谢谢。就是工作有点忙。' }
-    ]},
-    { category: '寒暄', level: 1, lines: [
-      { en: 'A: Long time no see!', zh: 'A: 好久不见！' },
-      { en: 'B: Yeah, it\'s been ages. You look great!', zh: 'B: 是啊，好久不见了。你看起来气色很好！' }
-    ]},
-    { category: '职场', level: 2, lines: [
-      { en: 'A: Could we reschedule tomorrow\'s meeting to Friday?', zh: 'A: 我们能把明天的会议改到周五吗？' },
-      { en: 'B: Friday works for me. What time?', zh: 'B: 周五我可以。几点？' }
-    ]},
-    { category: '职场', level: 2, lines: [
-      { en: 'A: I\'ll send you the report by the end of the day.', zh: 'A: 我会在今天下班前把报告发给你。' },
-      { en: 'B: Great, please cc me on the email.', zh: 'B: 好的，邮件请抄送我。' }
-    ]},
-    { category: '职场', level: 3, lines: [
-      { en: 'A: We need to cut the budget by 10% next quarter.', zh: 'A: 下个季度我们需要把预算削减10%。' },
-      { en: 'B: That\'s tough. Let\'s prioritize the must-haves first.', zh: 'B: 这有点难。我们先确定优先级最高的项目吧。' }
-    ]},
-    { category: '餐饮', level: 1, lines: [
-      { en: 'A: What do you recommend?', zh: 'A: 有什么推荐的吗？' },
-      { en: 'B: The seafood pasta is our most popular dish.', zh: 'B: 海鲜意粉是我们最受欢迎的菜品。' }
-    ]},
-    { category: '餐饮', level: 1, lines: [
-      { en: 'A: Could I get the check, please?', zh: 'A: 可以帮我结账吗？' },
-      { en: 'B: Sure, would you like to pay together or separately?', zh: 'B: 好的，您要一起付还是分开付？' }
-    ]},
-    { category: '餐饮', level: 2, lines: [
-      { en: 'A: I\'d like to make a reservation for two at 7 p.m.', zh: 'A: 我想预约今晚7点，两个人。' },
-      { en: 'B: We\'re fully booked at 7. How about 7:30?', zh: 'B: 7点已经订满了。7点半可以吗？' }
-    ]},
-    { category: '购物', level: 1, lines: [
-      { en: 'A: Do you have this in a smaller size?', zh: 'A: 这个有小一号的吗？' },
-      { en: 'B: Let me check in the back. I\'ll be right back.', zh: 'B: 我去仓库看看。马上回来。' }
-    ]},
-    { category: '购物', level: 1, lines: [
-      { en: 'A: Can I get a refund if it doesn\'t fit?', zh: 'A: 如果不合适可以退款吗？' },
-      { en: 'B: Yes, you can return it within 7 days with the receipt.', zh: 'B: 可以，凭小票7天内可退换。' }
-    ]},
-    { category: '购物', level: 2, lines: [
-      { en: 'A: Is this on sale?', zh: 'A: 这个在打折吗？' },
-      { en: 'B: It\'s 20% off today. The offer ends tomorrow.', zh: 'B: 今天打八折，优惠明天结束。' }
-    ]},
-    { category: '旅行', level: 2, lines: [
-      { en: 'A: How do I get to the train station from here?', zh: 'A: 从这里去火车站怎么走？' },
-      { en: 'B: Take bus 12 and get off at the third stop.', zh: 'B: 坐12路公交车，第三站下车。' }
-    ]},
-    { category: '旅行', level: 2, lines: [
-      { en: 'A: I\'d like a single room with a view.', zh: 'A: 我想要一间单人房，带景观的。' },
-      { en: 'B: We have one on the 8th floor. Would that be okay?', zh: 'B: 8楼有一间，可以吗？' }
-    ]},
-    { category: '旅行', level: 3, lines: [
-      { en: 'A: My flight got delayed. Can I change to an earlier one?', zh: 'A: 我的航班延误了。能改早一点的航班吗？' },
-      { en: 'B: Let me see. There\'s one at 3 p.m. but it costs extra.', zh: 'B: 我看看。下午3点有一班，但要补差价。' }
-    ]},
-    { category: '社交', level: 1, lines: [
-      { en: 'A: Are you free this weekend?', zh: 'A: 这周末有空吗？' },
-      { en: 'B: Saturday afternoon works for me. What do you have in mind?', zh: 'B: 周六下午可以。你想做什么？' }
-    ]},
-    { category: '社交', level: 2, lines: [
-      { en: 'A: Thanks for inviting me. The party was amazing!', zh: 'A: 谢谢你邀请我，派对太棒了！' },
-      { en: 'B: I\'m so glad you came. Let\'s do it again soon.', zh: 'B: 你能来太好了。我们下次再聚。' }
-    ]},
-    { category: '社交', level: 2, lines: [
-      { en: 'A: I\'m sorry, I can\'t make it tonight.', zh: 'A: 抱歉，我今晚来不了了。' },
-      { en: 'B: No worries. Let\'s catch up another time.', zh: 'B: 没事，我们改天再约。' }
-    ]},
-    { category: '电话', level: 2, lines: [
-      { en: 'A: Hello, may I speak to Mr. Zhang?', zh: 'A: 您好，请问张先生在吗？' },
-      { en: 'B: Speaking. Who\'s calling, please?', zh: 'B: 我就是。请问您是哪位？' }
-    ]},
-    { category: '电话', level: 1, lines: [
-      { en: 'A: I\'ll call you back in ten minutes.', zh: 'A: 我十分钟后再打给你。' },
-      { en: 'B: Okay, I\'ll be waiting.', zh: 'B: 好的，我等你。' }
-    ]},
-    { category: '求助', level: 1, lines: [
-      { en: 'A: Excuse me, could you help me carry this?', zh: 'A: 不好意思，能帮我抬一下这个吗？' },
-      { en: 'B: Of course. Where would you like me to put it?', zh: 'B: 当然可以。你想放哪里？' }
-    ]},
-    { category: '求助', level: 2, lines: [
-      { en: 'A: I\'m lost. Could you tell me where I am?', zh: 'A: 我迷路了。能告诉我这是哪里吗？' },
-      { en: 'B: You\'re on Main Street. The subway is two blocks away.', zh: 'B: 你在主街上。地铁站还有两个街区。' }
-    ]},
-    { category: '情感', level: 2, lines: [
-      { en: 'A: I\'m a bit stressed lately.', zh: 'A: 我最近有点压力大。' },
-      { en: 'B: Wanna talk about it? I\'m here for you.', zh: 'B: 想聊聊吗？我陪你。' }
-    ]},
-    { category: '情感', level: 1, lines: [
-      { en: 'A: I really appreciate your help.', zh: 'A: 真的很感谢你的帮助。' },
-      { en: 'B: Anytime. That\'s what friends are for.', zh: 'B: 随时都可以。朋友就是用来互相帮忙的。' }
-    ]},
-    { category: '观点', level: 2, lines: [
-      { en: 'A: What do you think of remote work?', zh: 'A: 你怎么看待远程办公？' },
-      { en: 'B: I love the flexibility, but it can be lonely sometimes.', zh: 'B: 我喜欢它的灵活性，但有时候会觉得孤单。' }
-    ]},
-    { category: '观点', level: 3, lines: [
-      { en: 'A: Do you think social media is good or bad?', zh: 'A: 你觉得社交媒体是好是坏？' },
-      { en: 'B: It depends. It connects people but also creates pressure.', zh: 'B: 看情况吧。它拉近了人与人之间的距离，但也带来了压力。' }
-    ]},
-    { category: '寒暄', level: 2, lines: [
-      { en: 'A: What have you been up to?', zh: 'A: 最近忙什么呢？' },
-      { en: 'B: Not much, just working and learning English.', zh: 'B: 没忙什么，就是上班和学英语。' }
-    ]},
-    { category: '职场', level: 1, lines: [
-      { en: 'A: Can you give me a hand with this spreadsheet?', zh: 'A: 你能帮我看一下这个表格吗？' },
-      { en: 'B: Sure, let me take a look.', zh: 'B: 当然，我看看。' }
-    ]},
-    { category: '餐饮', level: 1, lines: [
-      { en: 'A: I\'m allergic to peanuts. Is this dish safe?', zh: 'A: 我对花生过敏。这道菜没问题吧？' },
-      { en: 'B: Let me ask the chef to make sure.', zh: 'B: 我去问一下厨师确认一下。' }
-    ]},
-    { category: '购物', level: 2, lines: [
-      { en: 'A: Do you take credit cards?', zh: 'A: 你们收信用卡吗？' },
-      { en: 'B: Yes, we accept all major cards and mobile pay.', zh: 'B: 收的，主流信用卡和移动支付都可以。' }
-    ]},
-    { category: '旅行', level: 1, lines: [
-      { en: 'A: Is breakfast included?', zh: 'A: 早餐包含在内吗？' },
-      { en: 'B: Yes, it\'s served from 7 to 10 a.m.', zh: 'B: 是的，早餐时间是早上7点到10点。' }
-    ]},
-    { category: '社交', level: 1, lines: [
-      { en: 'A: Let\'s keep in touch.', zh: 'A: 常联系啊。' },
-      { en: 'B: Definitely. I\'ll text you later.', zh: 'B: 一定。我晚点给你发消息。' }
-    ]},
-    { category: '电话', level: 2, lines: [
-      { en: 'A: Could you transfer me to the sales department?', zh: 'A: 能帮我转接到销售部吗？' },
-      { en: 'B: One moment, please. I\'ll connect you.', zh: 'B: 请稍等，我帮您转接。' }
-    ]},
-    { category: '求助', level: 1, lines: [
-      { en: 'A: Could you tell me how to use this machine?', zh: 'A: 能告诉我这台机器怎么用吗？' },
-      { en: 'B: Of course. Just press the green button to start.', zh: 'B: 当然。按绿色按钮开始就行。' }
-    ]},
-    { category: '情感', level: 2, lines: [
-      { en: 'A: I feel like I\'m falling behind.', zh: 'A: 我觉得自己落后了。' },
-      { en: 'B: Everyone moves at their own pace. You\'re doing fine.', zh: 'B: 每个人都有自己的节奏。你已经做得很好了。' }
-    ]},
-    { category: '观点', level: 1, lines: [
-      { en: 'A: I prefer tea to coffee.', zh: 'A: 比起咖啡我更喜欢茶。' },
-      { en: 'B: Same here. Coffee makes me too jittery.', zh: 'B: 我也是。咖啡让我太亢奋了。' }
-    ]},
-    { category: '职场', level: 2, lines: [
-      { en: 'A: Let\'s touch base next Monday morning.', zh: 'A: 我们下周一上午碰一下。' },
-      { en: 'B: Sounds good. I\'ll put it on my calendar.', zh: 'B: 好的。我会记在日历上。' }
-    ]},
-    { category: '餐饮', level: 2, lines: [
-      { en: 'A: This tastes amazing! What\'s in it?', zh: 'A: 这个太好吃了！里面放了什么？' },
-      { en: 'B: It\'s our secret sauce. Glad you like it!', zh: 'B: 这是我们的秘制酱料。你喜欢就好！' }
-    ]},
-    { category: '购物', level: 1, lines: [
-      { en: 'A: I\'m just looking, thanks.', zh: 'A: 我先看看，谢谢。' },
-      { en: 'B: Take your time. Let me know if you need anything.', zh: 'B: 慢慢来。需要帮忙叫我。' }
-    ]},
-    { category: '旅行', level: 2, lines: [
-      { en: 'A: Where can I exchange some money?', zh: 'A: 哪里可以换钱？' },
-      { en: 'B: There\'s a currency exchange on the second floor.', zh: 'B: 二楼有一家货币兑换点。' }
-    ]},
-    { category: '社交', level: 2, lines: [
-      { en: 'A: Do you want to grab lunch together?', zh: 'A: 一起吃午饭吗？' },
-      { en: 'B: Sure, I know a great place nearby.', zh: 'B: 好啊，我知道附近一家不错的店。' }
-    ]},
-    { category: '电话', level: 1, lines: [
-      { en: 'A: Sorry, I think you have the wrong number.', zh: 'A: 抱歉，你打错电话了。' },
-      { en: 'B: Oh, I\'m sorry. Have a good day.', zh: 'B: 啊，不好意思。祝你今天愉快。' }
-    ]},
-    { category: '求助', level: 2, lines: [
-      { en: 'A: My phone died. Can I borrow your charger?', zh: 'A: 我手机没电了。能借我充电器吗？' },
-      { en: 'B: Sure, here you go. There\'s an outlet over there too.', zh: 'B: 当然可以，给你。那边也有插座。' }
-    ]},
-    { category: '情感', level: 1, lines: [
-      { en: 'A: I\'m so happy for you!', zh: 'A: 真为你高兴！' },
-      { en: 'B: Thank you! That means a lot.', zh: 'B: 谢谢！这句话对我很重要。' }
-    ]},
-    { category: '观点', level: 2, lines: [
-      { en: 'A: I think waking up early changes everything.', zh: 'A: 我觉得早起能改变一切。' },
-      { en: 'B: I agree. Mornings are so peaceful.', zh: 'B: 我同意。早晨特别安静。' }
-    ]},
-    { category: '寒暄', level: 1, lines: [
-      { en: 'A: What\'s new with you?', zh: 'A: 最近有什么新鲜事吗？' },
-      { en: 'B: Not much. Just planning a short trip.', zh: 'B: 没什么。正在计划一次短途旅行。' }
-    ]},
-    { category: '职场', level: 3, lines: [
-      { en: 'A: We\'re falling behind schedule. What should we do?', zh: 'A: 我们进度落后了。怎么办？' },
-      { en: 'B: Let\'s add one more person to the team and work overtime this week.', zh: 'B: 我们给团队加个人，这周加个班吧。' }
-    ]},
-    { category: '餐饮', level: 1, lines: [
-      { en: 'A: Can I get a glass of water, please?', zh: 'A: 能给我一杯水吗？' },
-      { en: 'B: Still or sparkling?', zh: 'B: 要普通水还是气泡水？' }
-    ]},
-    { category: '购物', level: 2, lines: [
-      { en: 'A: Do you have any promotions going on?', zh: 'A: 现在有什么促销活动吗？' },
-      { en: 'B: Buy two get one free on selected items.', zh: 'B: 部分商品买二送一。' }
-    ]},
-    { category: '旅行', level: 1, lines: [
-      { en: 'A: What time does the museum open?', zh: 'A: 博物馆几点开门？' },
-      { en: 'B: It opens at 9 a.m. and closes at 5 p.m.', zh: 'B: 上午9点开门，下午5点关门。' }
-    ]},
-    { category: '社交', level: 1, lines: [
-      { en: 'A: It was great chatting with you.', zh: 'A: 和你聊天很开心。' },
-      { en: 'B: Likewise. Let\'s do this again soon.', zh: 'B: 我也是。我们下次再聊。' }
-    ]},
-    { category: '电话', level: 2, lines: [
-      { en: 'A: Can you leave a message?', zh: 'A: 你能留个言吗？' },
-      { en: 'B: Please tell him I called. It\'s about the meeting.', zh: 'B: 请告诉他我打过电话。是关于会议的事。' }
-    ]},
-    { category: '求助', level: 1, lines: [
-      { en: 'A: Could you take a photo for me?', zh: 'A: 能帮我拍张照吗？' },
-      { en: 'B: Sure. Say cheese!', zh: 'B: 当然。说茄子！' }
-    ]},
-    { category: '情感', level: 3, lines: [
-      { en: 'A: I don\'t know what to do anymore.', zh: 'A: 我不知道该怎么办了。' },
-      { en: 'B: Take a deep breath. We\'ll figure it out together.', zh: 'B: 深呼吸。我们一起想办法。' }
-    ]},
-    { category: '观点', level: 2, lines: [
-      { en: 'A: Do you believe in work-life balance?', zh: 'A: 你相信工作和生活要平衡吗？' },
-      { en: 'B: Absolutely. Burnout helps no one.', zh: 'B: 当然。精疲力竭对谁都没好处。' }
-    ]},
-    { category: '职场', level: 1, lines: [
-      { en: 'A: See you at the meeting.', zh: 'A: 会议上见。' },
-      { en: 'B: See you there. I\'ll prepare the slides.', zh: 'B: 一会儿见。我会准备好幻灯片。' }
-    ]},
-    { category: '餐饮', level: 2, lines: [
-      { en: 'A: The bill, please. And could I get a takeaway box?', zh: 'A: 请结账。另外能给我个打包盒吗？' },
-      { en: 'B: Of course. I\'ll bring it right away.', zh: 'B: 当然。我马上拿过来。' }
-    ]},
-    { category: '购物', level: 1, lines: [
-      { en: 'A: How much is this?', zh: 'A: 这个多少钱？' },
-      { en: 'B: It\'s 128 yuan. Would you like a bag?', zh: 'B: 128元。需要袋子吗？' }
-    ]},
-    { category: '旅行', level: 2, lines: [
-      { en: 'A: Is there a luggage storage service?', zh: 'A: 有行李寄存服务吗？' },
-      { en: 'B: Yes, it\'s next to the front desk.', zh: 'B: 有的，在前台旁边。' }
-    ]},
-    { category: '社交', level: 2, lines: [
-      { en: 'A: What kind of music do you like?', zh: 'A: 你喜欢什么类型的音乐？' },
-      { en: 'B: I\'m into indie and R&B lately.', zh: 'B: 最近我喜欢独立音乐和R&B。' }
-    ]},
-    { category: '电话', level: 1, lines: [
-      { en: 'A: Who\'s speaking, please?', zh: 'A: 请问您是哪位？' },
-      { en: 'B: This is Li Wei from ABC Company.', zh: 'B: 我是ABC公司的李伟。' }
-    ]},
-    { category: '求助', level: 2, lines: [
-      { en: 'A: I missed my stop. What should I do?', zh: 'A: 我坐过站了。怎么办？' },
-      { en: 'B: Get off at the next stop and take the train back.', zh: 'B: 下一站下车，再坐回去。' }
-    ]},
-    { category: '情感', level: 1, lines: [
-      { en: 'A: You look upset. Is everything okay?', zh: 'A: 你看起来不太开心。没事吧？' },
-      { en: 'B: I\'m fine, just a little tired.', zh: 'B: 没事，就是有点累。' }
-    ]},
-    { category: '观点', level: 3, lines: [
-      { en: 'A: Should young people buy a house early?', zh: 'A: 年轻人应该早点买房吗？' },
-      { en: 'B: It depends on the city and their financial situation.', zh: 'B: 这要看城市和他们的经济状况。' }
-    ]},
-    { category: '寒暄', level: 1, lines: [
-      { en: 'A: Hi! How\'s your day going?', zh: 'A: 嗨！今天过得怎么样？' },
-      { en: 'B: Not bad. How about yours?', zh: 'B: 还不错。你呢？' }
-    ]},
-    { category: '职场', level: 2, lines: [
-      { en: 'A: Can you review this document before I send it?', zh: 'A: 你能在发之前帮我看一下这份文件吗？' },
-      { en: 'B: Sure, send it over. I\'ll check it now.', zh: 'B: 当然，发过来吧。我现在就看。' }
-    ]},
-    { category: '餐饮', level: 1, lines: [
-      { en: 'A: I\'d like my steak medium rare.', zh: 'A: 我的牛排要三分熟。' },
-      { en: 'B: Got it. Would you like any sides?', zh: 'B: 好的。要配什么配菜吗？' }
-    ]},
-    { category: '购物', level: 2, lines: [
-      { en: 'A: Can I try this on?', zh: 'A: 我能试一下吗？' },
-      { en: 'B: Sure, the fitting room is over there.', zh: 'B: 可以，试衣间在那边。' }
-    ]},
-    { category: '旅行', level: 3, lines: [
-      { en: 'A: My passport is missing. What should I do?', zh: 'A: 我的护照不见了。怎么办？' },
-      { en: 'B: Report it to the police first, then contact the embassy.', zh: 'B: 先报警，然后联系大使馆。' }
-    ]},
-    { category: '社交', level: 1, lines: [
-      { en: 'A: Happy birthday! This is for you.', zh: 'A: 生日快乐！这是给你的。' },
-      { en: 'B: Thank you so much. You shouldn\'t have!', zh: 'B: 太谢谢了。你太客气了！' }
-    ]},
-    { category: '电话', level: 2, lines: [
-      { en: 'A: I\'ll put you on hold for a moment.', zh: 'A: 请稍等，我让您听一下音乐。' },
-      { en: 'B: Okay, no problem.', zh: 'B: 好的，没问题。' }
-    ]},
-    { category: '求助', level: 1, lines: [
-      { en: 'A: Excuse me, is this seat taken?', zh: 'A: 不好意思，这个座位有人吗？' },
-      { en: 'B: No, feel free to sit here.', zh: 'B: 没有，请坐。' }
-    ]},
-    { category: '情感', level: 2, lines: [
-      { en: 'A: I\'m proud of you.', zh: 'A: 我为你骄傲。' },
-      { en: 'B: That\'s so sweet of you to say.', zh: 'B: 你这么说真好。' }
-    ]},
-    { category: '观点', level: 1, lines: [
-      { en: 'A: I think reading is the best habit.', zh: 'A: 我觉得阅读是最好的习惯。' },
-      { en: 'B: I couldn\'t agree more. It opens your mind.', zh: 'B: 完全同意。阅读能开阔眼界。' }
-    ]},
-    { category: '职场', level: 2, lines: [
-      { en: 'A: The client wants to move the deadline up.', zh: 'A: 客户想把截止日期提前。' },
-      { en: 'B: That\'s tight. Let\'s see what we can prioritize.', zh: 'B: 时间很紧。我们看看能优先做哪些。' }
-    ]},
-    { category: '餐饮', level: 1, lines: [
-      { en: 'A: I\'ll have what she\'s having.', zh: 'A: 我要和她一样的。' },
-      { en: 'B: Good choice. It\'s one of our best sellers.', zh: 'B: 好选择。这是我们的畅销款。' }
-    ]},
-    { category: '购物', level: 2, lines: [
-      { en: 'A: Can I get a gift receipt?', zh: 'A: 能给我一张礼品收据吗？' },
-      { en: 'B: Sure, I\'ll include one in the bag.', zh: 'B: 好的，我会放在袋子里。' }
-    ]},
-    { category: '旅行', level: 1, lines: [
-      { en: 'A: Is Wi-Fi free?', zh: 'A: Wi-Fi是免费的吗？' },
-      { en: 'B: Yes, the password is on the table.', zh: 'B: 是的，密码在桌上。' }
-    ]},
-    { category: '社交', level: 2, lines: [
-      { en: 'A: Are you coming to the get-together?', zh: 'A: 你要来参加聚会吗？' },
-      { en: 'B: I wouldn\'t miss it for the world.', zh: 'B: 我当然要来，怎么可能错过。' }
-    ]},
-    { category: '电话', level: 1, lines: [
-      { en: 'A: I\'ll get straight to the point.', zh: 'A: 我直说吧。' },
-      { en: 'B: Please do.', zh: 'B: 请讲。' }
-    ]},
-    { category: '求助', level: 2, lines: [
-      { en: 'A: My car broke down. Can you pick me up?', zh: 'A: 我的车抛锚了。你能来接我吗？' },
-      { en: 'B: Of course. Send me your location.', zh: 'B: 当然。把你的位置发我。' }
-    ]},
-    { category: '情感', level: 1, lines: [
-      { en: 'A: I missed you.', zh: 'A: 我想你了。' },
-      { en: 'B: I missed you too.', zh: 'B: 我也想你了。' }
-    ]},
-    { category: '观点', level: 2, lines: [
-      { en: 'A: I think learning a language is like building a muscle.', zh: 'A: 我觉得学语言就像练肌肉。' },
-      { en: 'B: Exactly. Consistency matters more than talent.', zh: 'B: 没错。坚持比天赋更重要。' }
-    ]},
-    { category: '寒暄', level: 1, lines: [
-      { en: 'A: Good to see you again!', zh: 'A: 很高兴又见到你！' },
-      { en: 'B: You too! How was your weekend?', zh: 'B: 我也是！周末过得怎么样？' }
-    ]},
-    { category: '职场', level: 2, lines: [
-      { en: 'A: Can we go over the proposal one more time?', zh: 'A: 我们能再过一遍提案吗？' },
-      { en: 'B: Sure. I\'ll share my screen.', zh: 'B: 好的。我共享一下屏幕。' }
-    ]},
-    { category: '餐饮', level: 2, lines: [
-      { en: 'A: Is it possible to make this less spicy?', zh: 'A: 这个能做少一点辣吗？' },
-      { en: 'B: Absolutely. I\'ll tell the kitchen.', zh: 'B: 当然可以。我跟厨房说一声。' }
-    ]},
-    { category: '购物', level: 1, lines: [
-      { en: 'A: I\'ll take it.', zh: 'A: 我买了。' },
-      { en: 'B: Great. Cash or card?', zh: 'B: 好的。现金还是刷卡？' }
-    ]},
-    { category: '旅行', level: 2, lines: [
-      { en: 'A: Can you recommend a local restaurant?', zh: 'A: 你能推荐一家本地餐厅吗？' },
-      { en: 'B: Try the noodle shop around the corner. It\'s delicious.', zh: 'B: 拐角那家面馆不错，很好吃。' }
-    ]},
-    { category: '社交', level: 1, lines: [
-      { en: 'A: Let me know next time you\'re free.', zh: 'A: 你下次有空告诉我。' },
-      { en: 'B: Will do. We should hang out more.', zh: 'B: 一定。我们应该多聚聚。' }
-    ]},
-    { category: '电话', level: 2, lines: [
-      { en: 'A: I\'m calling about the job posting.', zh: 'A: 我打电话来咨询招聘信息。' },
-      { en: 'B: Thank you for your interest. Let\'s schedule an interview.', zh: 'B: 感谢您的关注。我们来安排一次面试吧。' }
-    ]},
-    { category: '求助', level: 1, lines: [
-      { en: 'A: Could you repeat that more slowly?', zh: 'A: 能再说慢一点吗？' },
-      { en: 'B: Of course. I said the meeting is at 3 p.m.', zh: 'B: 当然。我说会议是下午3点。' }
-    ]},
-    { category: '情感', level: 2, lines: [
-      { en: 'A: I\'m sorry for what I said.', zh: 'A: 我为我说过的话道歉。' },
-      { en: 'B: It\'s okay. We all have bad days.', zh: 'B: 没事。谁都有心情不好的时候。' }
-    ]},
-    { category: '观点', level: 2, lines: [
-      { en: 'A: Do you prefer city life or country life?', zh: 'A: 你喜欢城市生活还是乡村生活？' },
-      { en: 'B: I like the convenience of the city, but I miss the quiet.', zh: 'B: 我喜欢城市的便利，但想念乡村的安静。' }
-    ]},
-    { category: '职场', level: 1, lines: [
-      { en: 'A: Have a great day at work!', zh: 'A: 祝你今天工作顺利！' },
-      { en: 'B: Thanks, you too!', zh: 'B: 谢谢，你也是！' }
-    ]},
-    { category: '餐饮', level: 1, lines: [
-      { en: 'A: Can I see the menu, please?', zh: 'A: 可以给我看一下菜单吗？' },
-      { en: 'B: Here you go. Today\'s specials are on the first page.', zh: 'B: 给您。今日特餐在第一页。' }
-    ]},
-    { category: '购物', level: 2, lines: [
-      { en: 'A: It\'s a bit pricey. Can you give me a discount?', zh: 'A: 有点贵。能便宜点吗？' },
-      { en: 'B: I can give you 5% off if you pay cash.', zh: 'B: 如果你付现金，我可以给你九五折。' }
-    ]},
-    { category: '旅行', level: 1, lines: [
-      { en: 'A: Where is the nearest restroom?', zh: 'A: 最近的洗手间在哪里？' },
-      { en: 'B: Go straight and turn left. It\'s next to the elevator.', zh: 'B: 直走然后左转。在电梯旁边。' }
-    ]},
-    { category: '社交', level: 2, lines: [
-      { en: 'A: Your outfit looks amazing today.', zh: 'A: 你今天穿得好漂亮。' },
-      { en: 'B: Thank you! That\'s so kind of you.', zh: 'B: 谢谢！你真好。' }
-    ]},
-    { category: '电话', level: 1, lines: [
-      { en: 'A: Sorry to keep you waiting.', zh: 'A: 抱歉让您久等了。' },
-      { en: 'B: No problem. What\'s the update?', zh: 'B: 没事。有什么进展吗？' }
-    ]},
-    { category: '求助', level: 2, lines: [
-      { en: 'A: Can you watch my bag for a second?', zh: 'A: 能帮我看一下包吗？' },
-      { en: 'B: Sure, I\'ll keep an eye on it.', zh: 'B: 当然，我帮你看着。' }
-    ]},
-    { category: '情感', level: 1, lines: [
-      { en: 'A: I\'m here if you need to talk.', zh: 'A: 如果你想聊聊，我随时在。' },
-      { en: 'B: That really means a lot to me.', zh: 'B: 这对我来说真的很重要。' }
-    ]},
-    { category: '观点', level: 2, lines: [
-      { en: 'A: I think taking breaks makes you more productive.', zh: 'A: 我觉得休息能让你更高效。' },
-      { en: 'B: Totally. Rest is part of the work.', zh: 'B: 完全同意。休息也是工作的一部分。' }
-    ]},
-    { category: '寒暄', level: 1, lines: [
-      { en: 'A: See you later!', zh: 'A: 回头见！' },
-      { en: 'B: See you! Take care.', zh: 'B: 再见！保重。' }
-    ]},
-  ];
+  function renderMakeups() {
+    const items = pickN(MAKEUP_DATA, 3);
+    $('makeupList').innerHTML = items.map(m => `
+      <div class="content-card">
+        <div class="card-title">${escapeHtml(m.name)}</div>
+        <div class="card-body">
+          ${m.points.map(p => `<div class="health-item"><span class="health-bullet">•</span><span class="health-text">${escapeHtml(p)}</span></div>`).join('')}
+        </div>
+      </div>`).join('');
+  }
 
-  // 英语学习状态已在顶部状态区统一初始化
+  function renderWardrobe() {
+    $('wardrobeList').innerHTML = WARDROBE_DATA.map(w => `
+      <div class="content-card">
+        <div class="card-title">${w.emoji} ${escapeHtml(w.name)}</div>
+        <div class="card-body"><p>${escapeHtml(w.logic)}</p></div>
+      </div>`).join('');
+  }
 
-  function getStudyDateKey() {
-    const d = new Date();
-    d.setDate(d.getDate() + studyDateOffset);
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  function renderHealth() {
+    $('healthList').innerHTML = HEALTH_DATA.map(h => `
+      <div class="content-card">
+        <div class="card-title"><span class="tag tag-green">${escapeHtml(h.cat)}</span></div>
+        <div class="card-body">
+          ${h.items.map(item => `<div class="health-item"><span class="health-bullet">•</span><span class="health-text">${escapeHtml(item)}</span></div>`).join('')}
+        </div>
+      </div>`).join('');
   }
-  function getStudyDateLabel() {
-    if (studyDateOffset === 0) return '今天';
-    if (studyDateOffset === -1) return '昨天';
-    if (studyDateOffset === 1) return '明天';
-    const k = getStudyDateKey();
-    return dateKeyLabel(k);
+
+  function renderCheckups() {
+    $('checkupList').innerHTML = CHECKUP_DATA.map(c => `
+      <div class="content-card">
+        <div class="card-title">${escapeHtml(c.name)}</div>
+        <div class="card-body">
+          <p><strong>周期：</strong><span class="hl">${escapeHtml(c.cycle)}</span></p>
+          <p style="color:var(--text-muted);font-size:11px;">💡 ${escapeHtml(c.note)}</p>
+        </div>
+      </div>`).join('');
   }
-  // 根据日期偏移抽取当日 30 条对话（同一日期固定）
-  function getDailyDialogues() {
-    const perDay = 30;
-    const start = ((studyDateOffset % dialoguePool.length) + dialoguePool.length) % dialoguePool.length;
-    const arr = [];
-    for (let i = 0; i < perDay; i++) {
-      const poolIdx = (start + i) % dialoguePool.length;
-      arr.push({ ...dialoguePool[poolIdx], dailyIdx: i, poolIdx });
-    }
-    return arr;
-  }
-  function getDayPractice(key) {
-    if (!studyPracticeByDate[key]) studyPracticeByDate[key] = {};
-    return studyPracticeByDate[key];
-  }
-  function isFav(poolIdx) { return studyFavorites.includes(poolIdx); }
-  function toggleFav(poolIdx) {
-    const idx = studyFavorites.indexOf(poolIdx);
-    if (idx >= 0) studyFavorites.splice(idx, 1); else studyFavorites.push(poolIdx);
-  }
+
+  // ========== 语音朗读 ==========
   function speakEN(text) {
-    if (!('speechSynthesis' in window)) { toast('浏览器不支持语音朗读'); return; }
+    if (!('speechSynthesis' in window)) { toast('浏览器不支持语音'); return; }
     speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'en-US'; u.rate = 0.9; u.pitch = 1;
+    const u = new SpeechSynthesisUtterance(text.replace(/[❌✅📌💡🔊]/g, ''));
+    u.lang = 'en-US'; u.rate = 0.9;
     speechSynthesis.speak(u);
   }
-  function speakDialogue(dailyIdx) {
-    const d = getDailyDialogues()[dailyIdx];
-    const text = d.lines.map(l => l.en.replace(/^[A-Z]: /, '')).join(' ');
-    speakEN(text);
-  }
-  function renderCategories() {
-    const wrap = document.getElementById('studyCategories');
-    wrap.innerHTML = studyCategoriesDef.map(c => {
-      const active = studyFilter === c.key ? 'active' : '';
-      return `<span class="study-cat-chip ${active}" data-act="study-filter" data-cat="${c.key}">${c.emoji} ${c.label}</span>`;
-    }).join('');
-  }
-  function updateStudyStats() {
-    const key = getStudyDateKey();
-    const day = getDayPractice(key);
-    const dialogues = getDailyDialogues();
-    const todayDone = dialogues.filter(d => day[d.dailyIdx]).length;
 
-    // 连续天数
-    let streak = 0;
-    for (let i = 0; i < 365; i++) {
-      const d = new Date(); d.setDate(d.getDate() - i);
-      const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-      const dayData = studyPracticeByDate[k] || {};
-      if (Object.values(dayData).some(v => v)) streak++; else break;
-    }
-
-    document.getElementById('statToday').textContent = `${todayDone}/${dialogues.length}`;
-    document.getElementById('statTotal').textContent = studyTotalCount;
-    document.getElementById('statFav').textContent = studyFavorites.length;
-    document.getElementById('statStreak').textContent = streak;
-  }
-  function renderStudyTasks() {
-    renderCategories();
-    document.getElementById('studyDateLabel').textContent = getStudyDateLabel();
-    const zhBtn = document.getElementById('studyZhToggle');
-    zhBtn.textContent = studyShowZh ? '中文翻译 开' : '中文翻译 关';
-    zhBtn.classList.toggle('active', studyShowZh);
-
-    const key = getStudyDateKey();
-    const day = getDayPractice(key);
-    let dialogues = getDailyDialogues();
-    if (studyFilter === 'fav') dialogues = dialogues.filter(d => isFav(d.poolIdx));
-    else if (studyFilter === 'unpractice') dialogues = dialogues.filter(d => !day[d.dailyIdx]);
-    else if (studyFilter !== 'all') dialogues = dialogues.filter(d => d.category === studyFilter);
-
-    const list = document.getElementById('studyDialogueList');
-    const empty = document.getElementById('studyEmpty');
-    if (dialogues.length === 0) { list.innerHTML = ''; empty.style.display = 'block'; }
-    else {
-      empty.style.display = 'none';
-      list.innerHTML = dialogues.map((d, i) => {
-        const done = !!day[d.dailyIdx];
-        const fav = isFav(d.poolIdx);
-        const catDef = studyCategoriesDef.find(c => c.key === d.category) || { emoji: '🏷️' };
-        const stars = '★'.repeat(d.level) + '☆'.repeat(3 - d.level);
-        return `
-        <div class="study-dialogue-card" data-daily-idx="${d.dailyIdx}">
-          <div class="study-dialogue-head">
-            <div class="study-dialogue-meta">
-              <span class="tag tag-orange" style="font-size:10px;padding:2px 7px;">${catDef.emoji} ${d.category}</span>
-              <span class="study-dialogue-level">${stars}</span>
-            </div>
-            <span class="study-dialogue-idx">#${d.dailyIdx + 1}</span>
-          </div>
-          <div class="study-dialogue-body">
-            ${d.lines.map(l => `<div class="study-dialogue-line">${escapeHtml(l.en)}</div>`).join('')}
-            ${studyShowZh ? `<div class="study-dialogue-zh">${d.lines.map(l => escapeHtml(l.zh)).join('<br>')}</div>` : ''}
-          </div>
-          <div class="study-dialogue-actions">
-            <button class="btn" style="background:#fff3d6;color:#b8881f;border:1px solid #f0d68a;" data-act="study-speak" data-idx="${d.dailyIdx}">🔊 朗读</button>
-            <button class="btn btn-done ${done?'active':''}" data-act="study-practice" data-idx="${d.dailyIdx}">${done?'✓ 已练':'✓ 标记已练'}</button>
-            <button class="btn btn-fav ${fav?'active':''}" data-act="study-fav" data-idx="${d.dailyIdx}">${fav?'⭐ 已收藏':'☆ 收藏'}</button>
-          </div>
-        </div>`;
-      }).join('');
-    }
-    updateStudyStats();
-  }
-  function togglePractice(dailyIdx) {
-    const key = getStudyDateKey();
-    const day = getDayPractice(key);
-    const d = getDailyDialogues()[dailyIdx];
-    if (day[dailyIdx]) {
-      delete day[dailyIdx];
-      studyTotalCount = Math.max(0, studyTotalCount - 1);
-    } else {
-      day[dailyIdx] = true;
-      studyTotalCount += 1;
-    }
-    saveStore(); renderStudyTasks();
-  }
-  function markAllDone() {
-    const key = getStudyDateKey();
-    const day = getDayPractice(key);
-    const dialogues = getDailyDialogues();
-    let added = 0;
-    dialogues.forEach(d => { if (!day[d.dailyIdx]) { day[d.dailyIdx] = true; added++; } });
-    if (added === 0) { toast('今天已经全部练过啦'); return; }
-    studyTotalCount += added;
-    saveStore(); renderStudyTasks();
-    toast(`已标记 ${added} 条为已练`);
-  }
-  function toggleZh() {
-    studyShowZh = !studyShowZh;
-    saveStore(); renderStudyTasks();
-  }
-  function changeDay(delta) {
-    studyDateOffset += delta;
-    saveStore(); renderStudyTasks();
-  }
-  renderTasks();
-
-  // ========== 碎碎念（持久化）==========
-  let currentMood = '😊';
-  document.querySelectorAll('.mood-chip').forEach(c => {
-    c.addEventListener('click', () => {
-      document.querySelectorAll('.mood-chip').forEach(x => x.classList.remove('selected'));
-      c.classList.add('selected'); currentMood = c.dataset.mood;
+  // ========== 初始化渲染 ==========
+  function renderAll() {
+    renderNCE(); renderBiz(); renderGrammar(); renderVocab();
+    renderTopics(); renderScripts(); renderHotspots(); renderReview();
+    renderOutfits(); renderMakeups(); renderWardrobe();
+    renderHealth(); renderCheckups();
+    // 恢复批注
+    ['studyNote','mediaNote','beautyNote','healthNote'].forEach(id => {
+      const el = $(id);
+      if (el && store.notes[id]) el.value = store.notes[id];
+      if (el) el.addEventListener('input', () => { store.notes[id] = el.value; saveStore(); });
     });
-  });
-  function postDiary() {
-    const input = document.getElementById('diaryInput');
-    const text = input.value.trim();
-    if (!text) { toast('写点什么吧'); return; }
-    const d = new Date();
-    diaryEntries.unshift({
-      mood: currentMood, text,
-      time: `${d.getMonth()+1}月${d.getDate()}日 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`,
-      dateKey: todayKey()
-    });
-    input.value = ''; saveStore(); renderDiary(); toast('已记录这一刻');
   }
-  function renderDiary() {
-    const list = document.getElementById('diaryList');
-    const empty = document.getElementById('diaryEmpty');
-    list.innerHTML = diaryEntries.map((d, i) => `
-      <div class="diary-entry">
-        <div class="diary-entry-head"><span class="diary-mood">${d.mood}</span><span class="diary-time">${d.time}</span></div>
-        <div class="diary-text">${escapeHtml(d.text)}</div>
-        <div style="margin-top:8px;text-align:right;"><span class="task-delete" style="display:inline-flex;" data-act="del-diary" data-i="${i}">×</span></div>
-      </div>
-    `).join('');
-    empty.style.display = diaryEntries.length ? 'none' : 'block';
-  }
-  renderDiary();
+  renderAll();
 
-  // ========== 运动（持久化）==========
-  const sportKcalPerMin = { '跑步':10, '跳绳':12, '瑜伽':4, '健身':7, '走路':3, '骑行':8, '游泳':11 };
-  function addSport() {
-    const nameEl = document.getElementById('sportName');
-    const minEl = document.getElementById('sportMin');
-    const name = nameEl.value.trim();
-    const min = parseInt(minEl.value);
-    if (!name || !min || min <= 0) { toast('填写项目和分钟数'); return; }
-    const kcal = (sportKcalPerMin[name] || 5) * min;
-    const iconMap = { '跑步':'🏃', '跳绳':'🤸', '瑜伽':'🧘', '健身':'🏋️', '走路':'🚶', '骑行':'🚴', '游泳':'🏊' };
-    sportEntries.unshift({ name, min, kcal, icon: iconMap[name] || '💪', dateKey: todayKey() });
-    nameEl.value = ''; minEl.value = ''; saveStore(); renderSport();
-    toast(`已记录 ${name} ${min} 分钟`);
-  }
-  function renderSport() {
-    const list = document.getElementById('sportList');
-    const empty = document.getElementById('sportEmpty');
-    list.innerHTML = sportEntries.map((s, i) => `
-      <div class="sport-entry">
-        <div class="sport-icon">${s.icon}</div>
-        <div class="sport-info"><div class="sport-name">${escapeHtml(s.name)}</div><div class="sport-meta">${s.min} 分钟 · ${s.dateKey}</div></div>
-        <div class="sport-kcal">${s.kcal} kcal</div>
-        <div class="task-delete" data-act="del-sport" data-i="${i}">×</div>
-      </div>
-    `).join('');
-    empty.style.display = sportEntries.length ? 'none' : 'block';
-    const today = todayKey();
-    const todaySports = sportEntries.filter(s => s.dateKey === today);
-    const totalMin = todaySports.reduce((a,b)=>a+b.min,0);
-    const totalKcal = todaySports.reduce((a,b)=>a+b.kcal,0);
-    document.getElementById('sportStat').textContent = `今日 ${totalMin} 分钟 · ${totalKcal} 千卡`;
-    document.getElementById('sportProgressFill').style.width = Math.min(100, totalMin/60*100) + '%';
-  }
-  renderSport();
+  // ========== 刷新逻辑 ==========
+  const refreshMap = {
+    nce: renderNCE, biz: renderBiz, grammar: renderGrammar, vocab: renderVocab,
+    topics: renderTopics, scripts: renderScripts, hotspots: renderHotspots,
+    outfits: renderOutfits, makeups: renderMakeups, health: renderHealth,
+  };
 
-  // ========== 事件委托（统一处理点击，避免重渲染丢绑定）==========
+  // ========== 事件委托 ==========
   document.querySelector('.main-content').addEventListener('click', (ev) => {
     const el = ev.target.closest('[data-act]');
     if (!el) return;
     const act = el.dataset.act;
     ev.stopPropagation();
-
-    if (act === 'join') {
-      if (el.classList.contains('joined')) { el.classList.remove('joined'); el.textContent = '+ 加入计划'; toast('已移出计划'); }
-      else { el.classList.add('joined'); el.textContent = '✓ 已加入'; toast('已加入今日计划'); }
+    if (act === 'refresh') {
+      const fn = refreshMap[el.dataset.target];
+      if (fn) { fn(); toast('已更新素材'); }
     }
-    else if (act === 'open-inspire') {
-      openDouyinWork(inspireShown[+el.dataset.i]);
+    else if (act === 'speak') { speakEN(el.dataset.text); }
+    else if (act === 'filter-topic') {
+      store.topicFilter = el.dataset.cat; saveStore(); renderTopics();
     }
-    else if (act === 'copy') {
-      const title = el.dataset.title;
-      const fallback = () => { const ta = document.createElement('textarea'); ta.value = title; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(ta); };
-      if (navigator.clipboard) navigator.clipboard.writeText(title).catch(fallback); else fallback();
-      toast('标题已复制');
-    }
-    else if (act === 'open-hot') {
-      openDouyinWork(hotShown[+el.dataset.i]);
-    }
-    else if (act === 'open-review') {
-      const r = reviewData[+el.dataset.i];
-      const url = reviewLinks[r.title];
-      if (url) window.open(url, '_blank');
-      else { toast('请先点击「编辑链接」绑定'); toggleEditLink('review', +el.dataset.i); }
-    }
-    else if (act === 'toggle-edit') { toggleEditLink(el.dataset.type, +el.dataset.i); }
-    else if (act === 'save-link') {
-      const i = +el.dataset.i;
-      const input = document.getElementById(el.dataset.type + '-input-' + i);
-      let url = input.value.trim();
-      if (url && !/^https?:\/\//.test(url)) url = 'https://' + url;
-      reviewLinks[reviewData[i].title] = url;
-      saveStore(); renderReview();
-      toast(url ? '链接已保存，点击卡片直达作品' : '链接已清空');
-    }
-    else if (act === 'toggle-date') {
-      const key = el.dataset.key;
-      collapsedDates[key] = !collapsedDates[key];
-      saveStore(); renderTasks();
-    }
-    else if (act === 'toggle-task') {
-      const { key, i } = el.dataset;
-      tasksByDate[key][i].done = !tasksByDate[key][i].done;
-      saveStore(); renderTasks();
-    }
-    else if (act === 'del-task') {
-      const { key, i } = el.dataset;
-      tasksByDate[key].splice(i, 1);
-      if (tasksByDate[key].length === 0) delete tasksByDate[key];
-      saveStore(); renderTasks(); toast('已删除');
-    }
-    else if (act === 'study-prev-day') { changeDay(-1); }
-    else if (act === 'study-next-day') { changeDay(1); }
-    else if (act === 'study-toggle-zh') { toggleZh(); }
-    else if (act === 'study-mark-all') { markAllDone(); }
-    else if (act === 'study-filter') { studyFilter = el.dataset.cat; saveStore(); renderStudyTasks(); }
-    else if (act === 'study-speak') { speakDialogue(+el.dataset.idx); }
-    else if (act === 'study-practice') { togglePractice(+el.dataset.idx); }
-    else if (act === 'study-fav') {
-      const d = getDailyDialogues()[+el.dataset.idx];
-      toggleFav(d.poolIdx); saveStore(); renderStudyTasks();
-    }
-    else if (act === 'del-diary') {
-      diaryEntries.splice(+el.dataset.i, 1); saveStore(); renderDiary(); toast('已删除');
-    }
-    else if (act === 'del-sport') {
-      sportEntries.splice(+el.dataset.i, 1); saveStore(); renderSport(); toast('已删除');
+    else if (act === 'toggle-topic') {
+      const i = +el.dataset.idx;
+      const cur = store.topicStatus[i] || TOPIC_DATA[i].status;
+      store.topicStatus[i] = cur === 'done' ? 'pending' : 'done';
+      saveStore(); renderTopics(); toast(store.topicStatus[i] === 'done' ? '已标记已发布' : '已标记待拍摄');
     }
   });
-
-  function toggleEditLink(type, i) {
-    const row = document.getElementById(type + '-edit-' + i);
-    if (row) {
-      row.classList.toggle('show');
-      if (row.classList.contains('show')) setTimeout(() => document.getElementById(type + '-input-' + i).focus(), 50);
-    }
-  }
 
   // ========== 侧边栏切换 ==========
   document.querySelectorAll('.sidebar-item[data-view]').forEach(item => {
     item.addEventListener('click', () => {
-      const view = item.dataset.view;
-      if (view === 'profile') {
-        // 点「橙」字图标：切换激活态 + 跳到每日计划
-        const isActive = item.classList.contains('profile-active');
-        document.querySelectorAll('.sidebar-item').forEach(i => { i.classList.remove('active'); i.classList.remove('profile-active'); });
-        if (isActive) {
-          // 再点一下恢复到选题灵感
-          document.querySelector('.sidebar-item[data-view="inspire"]').classList.add('active');
-          document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-          document.getElementById('view-inspire').classList.add('active');
-        } else {
-          item.classList.add('profile-active');
-          document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-          const target = document.getElementById('view-plan');
-          if (target) { target.classList.add('active'); target.parentElement.scrollTop = 0; }
-        }
-        return;
-      }
-      document.querySelectorAll('.sidebar-item').forEach(i => { i.classList.remove('active'); i.classList.remove('profile-active'); });
+      document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
       item.classList.add('active');
+      const view = item.dataset.view;
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      const target = document.getElementById('view-' + view);
-      if (target) { target.classList.add('active'); target.parentElement.scrollTop = 0; }
+      $('view-' + view).classList.add('active');
     });
   });
-
-  // ========== Toast ==========
-  let toastTimer;
-  function toast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), 1600);
-  }
-
-  // ========== 工具 ==========
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
-
-  // ========== 浮动提示 ==========
-  function showTip() {
-    const tip = document.createElement('div');
-    tip.className = 'floating-tip';
-    tip.textContent = energyList[energyIdx].t.slice(0, 8);
-    tip.style.top = (180 + Math.random() * 220) + 'px';
-    document.querySelector('.phone-frame').appendChild(tip);
-    setTimeout(() => tip.remove(), 1500);
-  }
-  setTimeout(showTip, 1200);
-
-  // ========== 时钟 & 日期 ==========
-  function updateClock() {
-    const d = new Date();
-    document.getElementById('clock').textContent = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
-  }
-  updateClock(); setInterval(updateClock, 30000);
-  (function setDate() {
-    const d = new Date();
-    const weeks = ['周日','周一','周二','周三','周四','周五','周六'];
-    document.getElementById('todayDate').textContent = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 · ${weeks[d.getDay()]}`;
-  })();
-
-  // 页面隐藏时保存一次（兜底）
-  document.addEventListener('visibilitychange', () => { if (document.hidden) saveStore(); });
-  window.addEventListener('beforeunload', saveStore);
 </script>
-
 </body>
 </html>
